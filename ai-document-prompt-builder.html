@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Document Prompt Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Geist', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef4fa',
+                            100: '#d9e6f2',
+                            400: '#3f6690',
+                            500: '#2c4f75',
+                            600: '#1e3a5f',
+                            900: '#0f1f33',
+                        },
+                        accent: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            400: '#34d399',
+                            500: '#059669',
+                            600: '#047857',
+                        },
+                        modules: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#0f766e',
+                            600: '#115e59',
+                        },
+                        voice: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#d97706',
+                            600: '#b45309',
+                        },
+                        output: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            500: '#475569',
+                            600: '#334155',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+        }
+        body {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Section navigator pills */
+        .nav-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1.5px solid #cbd5e1;
+            color: #64748b;
+            background: #ffffff;
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: background-color .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+        }
+        .nav-pill:hover {
+            transform: translateY(-1px);
+        }
+        .nav-pill:focus-visible {
+            outline: 2px solid #1e3a5f;
+            outline-offset: 2px;
+        }
+        .nav-pill[data-nav-group="foundation"] { border-color: #b7c8db; color: #1e3a5f; }
+        .nav-pill[data-nav-group="modules"] { border-color: #99f6e4; color: #0f766e; }
+        .nav-pill[data-nav-group="voice"] { border-color: #fde68a; color: #b45309; }
+        .nav-pill[data-nav-group="output"] { border-color: #cbd5e1; color: #334155; }
+        .nav-pill.is-filled[data-nav-group="foundation"] { background: #1e3a5f; border-color: #1e3a5f; color: #fff; }
+        .nav-pill.is-filled[data-nav-group="modules"] { background: #0f766e; border-color: #0f766e; color: #fff; }
+        .nav-pill.is-filled[data-nav-group="voice"] { background: #d97706; border-color: #d97706; color: #fff; }
+        .nav-pill.is-filled[data-nav-group="output"] { background: #475569; border-color: #475569; color: #fff; }
+    </style>
+</head>
+<body class="antialiased min-h-screen font-sans selection:bg-brand-100 selection:text-brand-900">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-brand-500 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                    <i class="fa-solid fa-file-signature"></i>
+                </div>
+                <h1 class="text-xl font-bold text-slate-800 tracking-tight">Document <span class="text-brand-600 font-medium">Prompt Builder</span></h1>
+            </div>
+            <div class="text-sm text-slate-600 hidden sm:block">
+                Works with ChatGPT, Claude, Gemini & more
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT INPUT COLUMN -->
+            <div class="lg:col-span-8 space-y-10 pb-20">
+                
+                <!-- Introduction -->
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Build Your Document Prompt</h2>
+                    <p class="mt-2 text-slate-600">Choose your document type, layer on any analysis modules, companion outputs, or productivity tools you need, then set your formatting and design preferences. When you're finished, copy the completed prompt and paste it into ChatGPT, Claude, Gemini, or any AI tool of your choice.</p>
+                </div>
+
+                <!-- SECTION NAVIGATOR -->
+                <nav aria-label="Jump to section" class="sticky top-16 z-20 -mx-4 sm:mx-0 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200 px-4 sm:px-0 py-2 overflow-x-auto">
+                    <ol class="flex items-center gap-1.5 min-w-max">
+                        <li><a href="#section-1" data-nav-pill="1" data-nav-group="foundation" title="Topics & Additional Information" class="nav-pill">1</a></li>
+                        <li><a href="#section-2" data-nav-pill="2" data-nav-group="foundation" title="Output Length" class="nav-pill">2</a></li>
+                        <li><a href="#section-3" data-nav-pill="3" data-nav-group="foundation" title="Document Type" class="nav-pill">3</a></li>
+                        <li class="w-px h-4 bg-slate-200 mx-0.5"></li>
+                        <li><a href="#section-4" data-nav-pill="4" data-nav-group="modules" title="Analysis Modules" class="nav-pill">4</a></li>
+                        <li><a href="#section-5" data-nav-pill="5" data-nav-group="modules" title="Companion Outputs" class="nav-pill">5</a></li>
+                        <li><a href="#section-6" data-nav-pill="6" data-nav-group="modules" title="Productivity Tools" class="nav-pill">6</a></li>
+                        <li class="w-px h-4 bg-slate-200 mx-0.5"></li>
+                        <li><a href="#section-7" data-nav-pill="7" data-nav-group="voice" title="Writing Style & Tone" class="nav-pill">7</a></li>
+                        <li><a href="#section-8" data-nav-pill="8" data-nav-group="voice" title="Target Audience" class="nav-pill">8</a></li>
+                        <li class="w-px h-4 bg-slate-200 mx-0.5"></li>
+                        <li><a href="#section-9" data-nav-pill="9" data-nav-group="output" title="Citations & References" class="nav-pill">9</a></li>
+                        <li><a href="#section-10" data-nav-pill="10" data-nav-group="output" title="Tables, Charts & Visual Elements" class="nav-pill">10</a></li>
+                        <li><a href="#section-11" data-nav-pill="11" data-nav-group="output" title="Typography, Color & Visual Design" class="nav-pill">11</a></li>
+                    </ol>
+                </nav>
+
+                <!-- SECTION 1: Topics & Custom Context -->
+                <section id="section-1" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-pen text-brand-500"></i>
+                            <h3 class="text-lg font-semibold text-slate-800">1. Topics & Additional Information</h3>
+                        </div>
+                        <button onclick="clearContext()" class="text-xs text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-eraser"></i> Clear Context
+                        </button>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Enter the topics, names, background details, requirements, or source information you want the AI to include when creating your document.</p>
+                    <div class="relative bg-white rounded-xl border border-slate-200 p-1 shadow-sm">
+                        <textarea id="custom-context" rows="4" oninput="updateState('customContext', this.value)" class="w-full resize-none bg-white p-3 text-sm text-slate-700 leading-relaxed outline-none focus:ring-0 border-0 rounded-lg placeholder-slate-400" placeholder="e.g., Analyze the Q3 financial data and focus heavily on user acquisition costs versus lifetime value. Ensure you mention our main competitor..."></textarea>
+                    </div>
+                </section>
+
+                <!-- SECTION 2: Output Length -->
+                <section id="section-2" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-ruler-combined text-brand-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">2. Output Length</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Choose how long the finished document should be. Each preset automatically adjusts the expected level of detail, while precision options let you specify exact word or page counts when needed.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="lengthConstraints-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Output Length</label>
+                                <button onclick="clearLengthConstraint()" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="lengthConstraints-dropdown" onchange="handleLengthConstraint(this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+                        <div id="length-number-container" class="hidden">
+                            <label for="length-number-input" id="length-number-label" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Number of Words</label>
+                            <input type="number" id="length-number-input" placeholder="e.g. 1500" class="w-full sm:w-1/2 px-4 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-shadow" oninput="updateState('lengthNumber', this.value)">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 3: Document Type -->
+                <section id="section-3" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-file-invoice text-brand-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">3. Document Type</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Choose the type of document you want to create.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <label for="coreFormat-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Document Type</label>
+                            <button onclick="clearDropdown('coreFormat-dropdown', 'coreFormat')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-xmark"></i> Clear
+                            </button>
+                        </div>
+                        <select id="coreFormat-dropdown" onchange="updateState('coreFormat', this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                            <!-- JS Inject -->
+                        </select>
+                        <div class="mt-3 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-start gap-2">
+                            <i class="fa-solid fa-circle-info text-brand-400 mt-0.5 shrink-0"></i>
+                            <span>This is your primary document. Sections 4–6 below (Analysis Modules, Companion Outputs, Productivity Tools) are optional additions — each one can either be added to this document or produced as its own separate document.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 4: Analysis Modules -->
+                <section id="section-4" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-microscope text-modules-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">4. Analysis Modules</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Pick any number of analytical lenses and objectives to layer onto your document. Each one stacks as its own instruction block, and can be added to your main document or produced as its own separate document.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-start justify-between gap-4 bg-modules-50/60 -mx-4 -mt-4 mb-4 px-4 pt-4 pb-4 rounded-t-xl border-b border-slate-100">
+                            <div>
+                                <span class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-file-circle-plus text-modules-500"></i> Standalone Documents
+                                </span>
+                                <p class="text-xs text-slate-600 mt-1 max-w-md">On: each selected module below is produced as its own separate, standalone document instead of being folded into your main document. Off: modules are appended as sections of the main document.</p>
+                            </div>
+                            <div class="flex items-center gap-2 pt-0.5 shrink-0">
+                                <span id="standalone-toggle-label-analysisModules" class="text-[11px] font-semibold text-slate-600 w-6 text-right">Off</span>
+                                <button id="standalone-toggle-analysisModules" onclick="toggleStandalone('analysisModules')" type="button" aria-label="Toggle standalone documents" class="relative inline-flex h-5 w-10 items-center rounded-full bg-slate-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+                                    <span id="standalone-toggle-knob-analysisModules" class="inline-block h-4 w-4 transform translate-x-0.5 rounded-full bg-white shadow transition-transform"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Select any that apply</span>
+                            <button onclick="clearCheckboxGroup('analysisModules', 'analysisModules')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-xmark"></i> Clear
+                            </button>
+                        </div>
+                        <div id="analysisModules-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 5: Companion Outputs -->
+                <section id="section-5" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-layer-group text-modules-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">5. Companion Outputs</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Supporting structured outputs that enhance usability alongside your main document. Each one can be added to the main document or produced as its own separate document.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-start justify-between gap-4 bg-modules-50/60 -mx-4 -mt-4 mb-4 px-4 pt-4 pb-4 rounded-t-xl border-b border-slate-100">
+                            <div>
+                                <span class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-file-circle-plus text-modules-500"></i> Standalone Documents
+                                </span>
+                                <p class="text-xs text-slate-600 mt-1 max-w-md">On: each selected output below is produced as its own separate, standalone document instead of being folded into your main document. Off: outputs are appended as sections of the main document.</p>
+                            </div>
+                            <div class="flex items-center gap-2 pt-0.5 shrink-0">
+                                <span id="standalone-toggle-label-companionOutputs" class="text-[11px] font-semibold text-slate-600 w-6 text-right">Off</span>
+                                <button id="standalone-toggle-companionOutputs" onclick="toggleStandalone('companionOutputs')" type="button" aria-label="Toggle standalone documents" class="relative inline-flex h-5 w-10 items-center rounded-full bg-slate-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+                                    <span id="standalone-toggle-knob-companionOutputs" class="inline-block h-4 w-4 transform translate-x-0.5 rounded-full bg-white shadow transition-transform"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Select any that apply</span>
+                            <button onclick="clearCheckboxGroup('companionOutputs', 'companionOutputs')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-xmark"></i> Clear
+                            </button>
+                        </div>
+                        <div id="companionOutputs-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 6: Productivity Tools -->
+                <section id="section-6" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-toolbox text-modules-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">6. Productivity Tools</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Utility outputs that improve the usability of your final document. Each one can be added to the main document or produced as its own separate document.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-start justify-between gap-4 bg-modules-50/60 -mx-4 -mt-4 mb-4 px-4 pt-4 pb-4 rounded-t-xl border-b border-slate-100">
+                            <div>
+                                <span class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-file-circle-plus text-modules-500"></i> Standalone Documents
+                                </span>
+                                <p class="text-xs text-slate-600 mt-1 max-w-md">On: each selected tool below is produced as its own separate, standalone document instead of being folded into your main document. Off: tools are appended as sections of the main document.</p>
+                            </div>
+                            <div class="flex items-center gap-2 pt-0.5 shrink-0">
+                                <span id="standalone-toggle-label-productivityTools" class="text-[11px] font-semibold text-slate-600 w-6 text-right">Off</span>
+                                <button id="standalone-toggle-productivityTools" onclick="toggleStandalone('productivityTools')" type="button" aria-label="Toggle standalone documents" class="relative inline-flex h-5 w-10 items-center rounded-full bg-slate-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+                                    <span id="standalone-toggle-knob-productivityTools" class="inline-block h-4 w-4 transform translate-x-0.5 rounded-full bg-white shadow transition-transform"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Select any that apply</span>
+                            <button onclick="clearCheckboxGroup('productivityTools', 'productivityTools')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-xmark"></i> Clear
+                            </button>
+                        </div>
+                        <div id="productivityTools-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 7: Writing Style & Tone -->
+                <section id="section-7" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-masks-theater text-voice-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">7. Writing Style & Tone</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Choose how the document should read. This controls tone, voice, sentence complexity, pacing, and overall writing style throughout the document.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="toneStyle-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Writing Style & Tone</label>
+                                <button onclick="clearDropdown('toneStyle-dropdown', 'toneStyle')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="toneStyle-dropdown" onchange="updateState('toneStyle', this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+                        <label class="flex items-start gap-2.5 pt-2 border-t border-slate-100 cursor-pointer">
+                            <input type="checkbox" id="auto-match-style-checkbox" onchange="toggleAutoMatchStyle(this.checked)" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 shrink-0">
+                            <span class="text-sm text-slate-700">
+                                Automatically match the writing style to the selected document type.
+                                <span class="block text-xs text-slate-600 mt-1">
+                                    Examples: Research Paper → Academic · Blog Post → Conversational · Whitepaper → Professional · Study Guide → Instructional. When enabled, this overrides any manually selected writing style above.
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </section>
+                
+                <!-- SECTION 8: Target Audience -->
+                <section id="section-8" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-users-viewfinder text-voice-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">8. Target Audience</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Select who will be reading this document. The AI adjusts terminology, assumptions, reading level, technical depth, and overall presentation for that audience.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="targetAudience-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Audience</label>
+                                <button onclick="clearDropdown('targetAudience-dropdown', 'targetAudience')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="targetAudience-dropdown" onchange="updateState('targetAudience', this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+                        <div class="border-t border-slate-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="readingLevel-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider" title="Overrides the default reading level normally implied by the selected audience.">
+                                    Reading Level <i class="fa-solid fa-circle-info text-slate-300"></i>
+                                </label>
+                                <button onclick="clearDropdown('readingLevel-dropdown', 'readingLevel')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="readingLevel-dropdown" onchange="updateState('readingLevel', this.value)" title="Overrides the default reading level normally implied by the selected audience." class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 9: Citation & Bibliography Rules -->
+                <section id="section-9" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-book-bookmark text-output-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">9. Citations & References</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Control how evidence is cited, how references are presented, and how supporting sources appear throughout the document.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="citationRules-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Citation Format</label>
+                                <button onclick="clearDropdown('citationRules-dropdown', 'citationRules')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="citationRules-dropdown" onchange="updateState('citationRules', this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+                        <div class="border-t border-slate-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="sourceAttribution-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Source Attribution</label>
+                                <button onclick="clearDropdown('sourceAttribution-dropdown', 'sourceAttribution')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="sourceAttribution-dropdown" onchange="updateState('sourceAttribution', this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+                        <div class="border-t border-slate-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="referenceSection-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Reference Section</label>
+                                <button onclick="clearDropdown('referenceSection-dropdown', 'referenceSection')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="referenceSection-dropdown" onchange="updateState('referenceSection', this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 10: Tables, Charts & Visual Elements -->
+                <section id="section-10" class="scroll-mt-24 space-y-4">
+                    <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                        <i class="fa-solid fa-chart-simple text-output-500"></i>
+                        <h3 class="text-lg font-semibold text-slate-800">10. Tables, Charts & Visual Elements</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 -mt-2">Control how information is presented visually. Add tables, charts, diagrams, timelines, and other visual elements to improve readability and communicate complex information more effectively.</p>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-5">
+                        <!-- 10a. Tables -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="tablePreference-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider" title="Controls how aggressively the AI converts information into structured tables.">
+                                    Tables <i class="fa-solid fa-circle-info text-slate-300"></i>
+                                </label>
+                                <button onclick="clearDropdown('tablePreference-dropdown', 'tablePreference')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="tablePreference-dropdown" onchange="updateState('tablePreference', this.value)" title="Controls how aggressively the AI converts information into structured tables." class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+
+                        <!-- 10b. Charts & Graphs -->
+                        <div class="border-t border-slate-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="chartPreference-dropdown" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider" title="Select which visualizations the AI should create whenever they improve understanding.">
+                                    Charts & Graphs <i class="fa-solid fa-circle-info text-slate-300"></i>
+                                </label>
+                                <button onclick="clearDropdown('chartPreference-dropdown', 'chartPreference')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <select id="chartPreference-dropdown" onchange="updateState('chartPreference', this.value)" title="Select which visualizations the AI should create whenever they improve understanding." class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                <!-- JS Inject -->
+                            </select>
+                        </div>
+
+                        <!-- 10c. Visual Emphasis -->
+                        <div class="border-t border-slate-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Visual Emphasis</span>
+                                <button onclick="clearCheckboxGroup('visualEmphasis', 'visualEmphasis')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <div id="visualEmphasis-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <!-- JS Inject -->
+                            </div>
+                        </div>
+
+                        <!-- 10d. Figure Formatting -->
+                        <div class="border-t border-slate-100 pt-4 space-y-3">
+                            <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Figure Formatting</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label for="figureStyle-dropdown" class="block text-[11px] font-medium text-slate-600">Figure Style</label>
+                                        <button onclick="clearDropdown('figureStyle-dropdown', 'figureStyle')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                    <select id="figureStyle-dropdown" onchange="updateState('figureStyle', this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                        <!-- JS Inject -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label for="figureCaptions-dropdown" class="block text-[11px] font-medium text-slate-600">Figure Captions</label>
+                                        <button onclick="clearDropdown('figureCaptions-dropdown', 'figureCaptions')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                    <select id="figureCaptions-dropdown" onchange="updateState('figureCaptions', this.value)" class="w-full bg-white border border-slate-300 rounded-lg py-2.5 px-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow">
+                                        <!-- JS Inject -->
+                                    </select>
+                                </div>
+                            </div>
+                            <label class="flex items-center gap-2.5 cursor-pointer pt-1">
+                                <input type="checkbox" id="number-figures-tables-checkbox" onchange="updateState('numberFiguresAndTables', this.checked)" class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 shrink-0">
+                                <span class="text-sm text-slate-700">Number all tables and figures <span class="text-xs text-slate-600">(e.g. Table 1, Table 2 · Figure 1, Figure 2)</span></span>
+                            </label>
+                        </div>
+
+                        <!-- 10e. Accessibility -->
+                        <div class="border-t border-slate-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Accessibility</span>
+                                <button onclick="clearCheckboxGroup('visualAccessibility', 'visualAccessibility')" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-xmark"></i> Clear
+                                </button>
+                            </div>
+                            <div id="visualAccessibility-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <!-- JS Inject -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 11: Typography, Color & Visual Design -->
+                <section id="section-11" class="scroll-mt-24 bg-gradient-to-br from-output-50 to-white border border-output-100 rounded-2xl p-6 shadow-sm space-y-8">
+                    <div>
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-2 mb-3">
+                            <i class="fa-solid fa-palette text-output-500"></i>
+                            <h3 class="text-lg font-semibold text-slate-800">11. Typography, Color & Visual Design</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">Control the visual style of your document, including fonts, hierarchy, and how color is used to improve readability and structure.</p>
+                    </div>
+
+                    <!-- 11a. Fonts and Sizes -->
+                    <div>
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1">
+                            <h4 class="text-sm font-semibold text-slate-800">11a. Fonts & Typography Hierarchy</h4>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <button onclick="clearFonts()" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset Typography
+                                </button>
+                                <button onclick="restoreRecommendedSizes()" class="text-[11px] text-slate-400 hover:text-brand-600 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-text-height"></i> Restore Recommended Sizes
+                                </button>
+                                <div class="flex items-center gap-2">
+                                    <span id="typography-toggle-label" class="text-[11px] font-semibold text-slate-600 w-6 text-right">Off</span>
+                                    <button id="typography-toggle" onclick="toggleTypography()" type="button" aria-label="Toggle typography settings" class="relative inline-flex h-5 w-10 items-center rounded-full bg-slate-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+                                        <span id="typography-toggle-knob" class="inline-block h-4 w-4 transform translate-x-0.5 rounded-full bg-white shadow transition-transform"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3">Off by default so nothing is added to your prompt unless you want it. Turn this on only if you want to specify exact fonts and sizes.</p>
+                        
+                        <div id="typography-panel" class="opacity-40 pointer-events-none transition-opacity duration-200 space-y-4">
+                            <!-- Global Font Selector -->
+                            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                                    <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider whitespace-nowrap">Apply One Font to Entire Document:</label>
+                                    <div class="flex-grow flex gap-2">
+                                        <select id="global-font-select" onchange="applyGlobalFont(this.value)" class="w-full sm:w-1/2 bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-shadow">
+                                            <option value="">-- Apply a single font to all --</option>
+                                            <option value="Aptos" title="Modern business font; Microsoft 365 default replacing Calibri">Aptos — Microsoft 365 default</option>
+                                            <option value="Calibri" title="Standard business font; still widely used in documents">Calibri — standard business font</option>
+                                            <option value="Arial" title="Universal sans-serif font; default in Google Docs and widely supported">Arial — Google Docs default</option>
+                                            <option value="Helvetica" title="Clean professional font; common in design and macOS systems">Helvetica — clean, macOS/design</option>
+                                            <option value="Times New Roman" title="Classic serif font used in academic and legal writing">Times New Roman — academic/legal</option>
+                                            <option value="Georgia" title="Highly readable serif font for reports and long-form text">Georgia — readable serif, reports</option>
+                                            <option value="Cambria" title="Clear serif font optimized for body text and reports">Cambria — serif, optimized for body text</option>
+                                            <option value="Verdana" title="Designed for screens; very readable at small sizes">Verdana — screen-optimized</option>
+                                            <option value="Other">Other... — custom font</option>
+                                        </select>
+                                        <input type="text" id="global-font-custom" placeholder="Type custom font..." class="hidden w-full sm:w-1/2 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-shadow" oninput="applyGlobalCustomFont(this.value)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Individual Fonts Matrix -->
+                            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm overflow-x-auto">
+                                <div class="min-w-[550px]">
+                                    <div class="grid grid-cols-12 gap-3 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2 mb-3">
+                                        <div class="col-span-4">Element</div>
+                                        <div class="col-span-5">Font Family</div>
+                                        <div class="col-span-3">Font Size</div>
+                                    </div>
+                                    <div id="font-inputs-container" class="space-y-3">
+                                        <!-- JS Inject -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 11b. Strategic Use of Color -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h4 class="text-sm font-semibold text-slate-800">11b. Strategic Use of Color</h4>
+                            <button onclick="clearColors()" class="text-[11px] text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Colors
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3">Uses the professional 60/30/10 design rule: 60% Dominant for body text and structure, 30% Secondary for headings and navigation, 10% Accent for tables, links, highlights, and callouts. Each list is pre-sorted with the recommended option listed first. The Accent list also offers "Match supplied branding" if you'd rather pull colors from a logo or brand materials.</p>
+                        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-4" id="colors-container">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+
+                    <!-- 11c. Additional Color Instructions -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-sm font-semibold text-slate-800">11c. Additional Color Instructions</h4>
+                        </div>
+                        <div class="bg-white rounded-xl border border-slate-200 p-1 shadow-sm">
+                            <textarea id="color-instructions" rows="4" oninput="updateState('customColorInstructions', this.value)" class="w-full resize-none bg-white p-3 text-sm text-slate-700 leading-relaxed outline-none focus:ring-0 border-0 rounded-lg placeholder-slate-400" placeholder="Examples:&#10;&#10;• Use red only for warnings.&#10;• Use green only for success indicators.&#10;• Match our corporate branding.&#10;• Keep the palette color-blind friendly.&#10;• Use high-contrast colors for accessibility."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Sticky Preview Panel -->
+            <div class="lg:col-span-4 relative">
+                <div class="sticky top-24 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-8rem)] min-h-[550px]">
+                    <div class="bg-slate-800 px-5 py-4 flex items-center justify-between">
+                        <h3 class="text-white font-medium flex items-center gap-2">
+                            <i class="fa-solid fa-terminal text-accent-400"></i>
+                            Compiled Prompt
+                        </h3>
+                        <span class="bg-slate-700 text-slate-300 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-semibold" id="word-count">0 Words</span>
+                    </div>
+                    
+                    <div class="p-5 flex-grow flex flex-col relative justify-between">
+                        <div class="flex-grow flex flex-col mb-4">
+                            <textarea id="master-prompt" readonly class="w-full h-full flex-grow resize-none bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-mono text-slate-700 leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Select options from the left to build your modular prompt..."></textarea>
+                        </div>
+                        
+                        <!-- Notification Toast inside panel -->
+                        <div id="copy-toast" class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-sm py-2 px-4 rounded-full shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none flex items-center gap-2 z-10">
+                            <i class="fa-solid fa-check text-accent-400"></i> Copied to clipboard!
+                        </div>
+
+                        <!-- Spaced Command Buttons -->
+                        <div class="space-y-4 pt-2">
+                            <button onclick="copyPrompt()" id="copy-btn" class="w-full bg-accent-600 hover:bg-accent-500 text-white font-medium py-3 px-4 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 group opacity-50 cursor-not-allowed">
+                                <i class="fa-solid fa-copy group-hover:scale-110 transition-transform"></i>
+                                Copy Prompt
+                            </button>
+                            
+                            <div class="border-t border-slate-100 pt-3">
+                                <button onclick="clearAll()" class="w-full bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-600 font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2 text-xs">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                    Clear Prompt Options
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- DATA DICTIONARY ---
+        const fontElements = [
+            { id: 'docTitle', label: 'Document Title', defaultSize: '24 pt', isMono: false },
+            { id: 'subtitle', label: 'Subtitle', defaultSize: '18 pt', isMono: false },
+            { id: 'h1', label: 'Heading 1 (H1)', defaultSize: '18 pt', isMono: false },
+            { id: 'h2', label: 'Heading 2 (H2)', defaultSize: '16 pt', isMono: false },
+            { id: 'h3', label: 'Heading 3 (H3)', defaultSize: '14 pt', isMono: false },
+            { id: 'bodyText', label: 'Body Text', defaultSize: '11 pt', isMono: false },
+            { id: 'tableHeaders', label: 'Table Headers', defaultSize: '11 pt (Bold)', isMono: true },
+            { id: 'tableCells', label: 'Table Cells', defaultSize: '10 pt', isMono: true },
+            { id: 'captions', label: 'Captions & Footnotes', defaultSize: '9 pt', isMono: false }
+        ];
+
+        // Font family reference (name -> short guidance shown inline in each dropdown)
+        const fontPalette = {
+            "Aptos": "Modern business font; Microsoft 365 default",
+            "Calibri": "Standard business font; still widely used",
+            "Arial": "Universal sans-serif; Google Docs default",
+            "Helvetica": "Clean, professional; common in design and macOS",
+            "Times New Roman": "Classic serif for academic and legal writing",
+            "Georgia": "Highly readable serif for reports and long-form text",
+            "Cambria": "Clear serif optimized for body text and reports",
+            "Verdana": "Designed for screens; readable at small sizes"
+        };
+        const fontOrder = ["Aptos", "Calibri", "Arial", "Helvetica", "Times New Roman", "Georgia", "Cambria", "Verdana"];
+
+        // Color reference (key -> name/hex/best use), sourced from the 60/30/10 palette guide
+        const colorPalette = {
+            black:    { name: "Black",         hex: "#000000", bestUse: "Maximum contrast; body text" },
+            charcoal: { name: "Charcoal",      hex: "#333333", bestUse: "Softer than black; ideal for body text" },
+            slate:    { name: "Slate Gray",    hex: "#475569", bestUse: "Secondary text, captions" },
+            darkgray: { name: "Dark Gray",     hex: "#555555", bestUse: "Alternative body text" },
+            navy:     { name: "Navy Blue",     hex: "#1E3A5F", bestUse: "Professional headings" },
+            royal:    { name: "Royal Blue",    hex: "#2563EB", bestUse: "Links and accents" },
+            forest:   { name: "Forest Green",  hex: "#166534", bestUse: "Positive metrics, sustainability" },
+            emerald:  { name: "Emerald Green", hex: "#10B981", bestUse: "Success indicators, highlights" },
+            burgundy: { name: "Burgundy",      hex: "#7F1D1D", bestUse: "Executive reports" },
+            crimson:  { name: "Crimson",       hex: "#B91C1C", bestUse: "Warnings or emphasis" },
+            amber:    { name: "Amber",         hex: "#D97706", bestUse: "Callouts and cautions" },
+            gold:     { name: "Gold",          hex: "#CA8A04", bestUse: "Premium or executive branding" },
+            purple:   { name: "Purple",        hex: "#6D28D9", bestUse: "Innovation or AI topics" },
+            teal:     { name: "Teal",          hex: "#0F766E", bestUse: "Technology, healthcare" }
+        };
+
+        // Which colors are recommended (in order, best first) for each 60/30/10 role
+        const colorRoleOrder = {
+            dominant:  ['charcoal', 'black', 'darkgray'],
+            secondary: ['navy', 'slate', 'forest', 'burgundy', 'teal'],
+            accent:    ['royal', 'emerald', 'amber', 'gold', 'crimson', 'purple']
+        };
+
+        const colorRoleLabels = {
+            dominant:  { label: '60% Dominant', desc: 'Main body text & structure' },
+            secondary: { label: '30% Secondary', desc: 'H1/H2, headers, footers' },
+            accent:    { label: '10% Accent', desc: 'Tables, links, callouts' }
+        };
+
+        const promptData = {
+            coreFormat: {
+                briefing: { title: "Briefing Document", desc: "Generate a briefing document that summarizes the sources, highlights key points, and presents the most important insights.", snippet: "Produce a professional Briefing Document that provides a concise yet comprehensive overview of the provided topic and source material.\n\nYour objective is to help the reader quickly understand the most important information without reading every source.\n\nUse all provided sources to identify the strongest evidence, recurring themes, and key insights.\n\nStructure the document using the following sections:\n\n• Executive Summary\n• Background\n• Key Findings\n• Supporting Evidence\n• Risks or Considerations\n• Conclusions\n• Recommendations\n• References (if applicable)\n\nPrioritize clarity, accuracy, objectivity, and practical decision-making. Avoid unnecessary repetition and clearly distinguish evidence from interpretation." },
+                study_guide: { title: "Study Guide", desc: "Create a study guide with summaries, flashcards, review questions, quizzes, and helpful learning aids.", snippet: "Create a comprehensive Study Guide based entirely on the provided source material.\n\nOrganize information into logical learning sections that build from foundational concepts to more advanced topics.\n\nInclude:\n\n• Learning Objectives\n• Topic Summaries\n• Important Definitions\n• Key Concepts\n• Worked Examples (when applicable)\n• Memory Tips or Mnemonics (when helpful)\n• Flashcards (Question / Answer)\n• Short-Answer Quiz\n• Answer Key\n• Suggested Review Topics\n\nWrite clearly using language appropriate for the selected audience. Emphasize understanding rather than memorization." },
+                blog_post: { title: "Blog Post", desc: "Write an engaging blog post that turns the most valuable insights into a clear, reader-friendly article.", snippet: "Write an engaging blog post based on the provided sources.\n\nTransform the information into a compelling article that is informative, easy to read, and valuable to the intended audience.\n\nInclude:\n\n• Attention-Grabbing Introduction\n• Clear Section Headings\n• Practical Examples\n• Supporting Evidence\n• Key Takeaways\n• Conclusion\n• Call to Action (when appropriate)\n\nWrite naturally using an engaging conversational style while preserving factual accuracy." },
+                expl_essay: { title: "Explanatory Essay", desc: "Write an explanatory essay that clearly teaches the topic using examples, context, and logical organization.", snippet: "Write an explanatory essay that teaches the reader about the selected topic.\n\nUse the provided sources to explain concepts clearly through logical progression, supporting evidence, and practical examples.\n\nInclude:\n\n• Introduction\n• Background Information\n• Main Discussion\n• Supporting Examples\n• Analysis\n• Conclusion\n\nFocus on explaining rather than persuading. Define technical terms before using them whenever possible." },
+                deep_research: { title: "Deep Research Report", desc: "Research the provided sources and produce a detailed report with analysis, findings, supporting evidence, and citations.", snippet: "Produce a comprehensive research report by synthesizing information from all provided sources.\n\nIdentify areas of agreement, disagreement, emerging themes, knowledge gaps, and significant findings.\n\nOrganize the report using:\n\n• Executive Summary\n• Background\n• Research Findings\n• Evidence Analysis\n• Areas of Consensus\n• Areas of Disagreement\n• Limitations\n• Conclusions\n• Recommendations\n• References\n\nSupport all major conclusions with evidence from the supplied sources. Clearly separate factual findings from interpretation or opinion." },
+                comparative_essay: { title: "Comparative Essay", desc: "Write a structured essay comparing multiple topics, highlighting similarities, differences, strengths, and weaknesses.", snippet: "Write a comparative essay that objectively examines the similarities and differences between the selected subjects.\n\nUse evidence from the provided sources to evaluate each topic fairly.\n\nInclude:\n\n• Introduction\n• Comparison Criteria\n• Similarities\n• Differences\n• Strengths\n• Weaknesses\n• Overall Analysis\n• Conclusion\n\nPresent balanced analysis supported by evidence rather than opinion." },
+                literature_review: { title: "Literature Review", desc: "Summarize and evaluate published research to explain the current understanding of the topic and identify key trends.", snippet: "Prepare a comprehensive literature review based on the supplied research sources.\n\nSynthesize findings across all sources rather than discussing each source independently.\n\nInclude:\n\n• Introduction\n• Current State of Research\n• Major Themes\n• Areas of Agreement\n• Areas of Disagreement\n• Research Gaps\n• Limitations\n• Future Research Opportunities\n• Conclusion\n\nEvaluate the quality of the evidence and identify trends supported across multiple sources." },
+                persuasive_essay: { title: "Persuasive / Argumentative Essay", desc: "Write a persuasive essay that supports a clear position using logical arguments, evidence, and counterarguments.", snippet: "Write a persuasive essay that develops a clear, well-supported position on the selected topic.\n\nUse the provided sources as evidence while acknowledging opposing viewpoints.\n\nInclude:\n\n• Introduction\n• Thesis Statement\n• Supporting Arguments\n• Evidence\n• Counterarguments\n• Rebuttals\n• Conclusion\n\nSupport every major claim with evidence and logical reasoning rather than emotional appeals." },
+                whitepaper: { title: "Technical Whitepaper", desc: "Produce a professional whitepaper explaining a technology, product, process, or solution in technical detail.", snippet: "Produce a professional technical whitepaper explaining the selected technology, process, product, or methodology.\n\nStructure the document using:\n\n• Executive Summary\n• Problem Statement\n• Technical Background\n• Architecture or Methodology\n• Implementation Details\n• Benefits\n• Limitations\n• Risks\n• Future Considerations\n• Conclusion\n• References\n\nWrite with precision, technical accuracy, and objective analysis suitable for professional audiences." },
+                roadmap: { title: "Strategic Roadmap", desc: "Create a strategic roadmap with goals, priorities, milestones, timelines, recommendations, and next steps.", snippet: "Develop a strategic roadmap based on the provided information.\n\nOrganize recommendations into practical phases with measurable objectives.\n\nInclude:\n\n• Executive Summary\n• Current Situation\n• Strategic Goals\n• Short-Term Priorities\n• Medium-Term Milestones\n• Long-Term Vision\n• Risks\n• Success Metrics\n• Recommended Next Steps\n\nEnsure recommendations are realistic, actionable, and aligned with the available evidence." },
+                knowledge_primer: { title: "Knowledge Primer", desc: "Build a beginner-friendly guide that explains the topic step by step using simple, easy-to-understand language.", snippet: "Create a beginner-friendly Knowledge Primer that introduces the selected topic from the ground up.\n\nExplain concepts in a logical sequence using clear language and practical examples.\n\nInclude:\n\n• Introduction\n• Core Concepts\n• Key Definitions\n• Step-by-Step Explanations\n• Examples\n• Frequently Asked Questions\n• Common Misconceptions\n• Summary\n• Additional Learning Resources\n\nAssume no prior knowledge and define technical terminology before using it." },
+                youtube_tutorial: { title: "YouTube Tutorial Guide", desc: "Convert a YouTube tutorial into a detailed written guide with step-by-step instructions, tools, prompts, and tips.", snippet: "Act as an expert technical writer, instructional designer, and process documentation specialist.\n\nConvert the provided YouTube tutorial into a comprehensive, professionally organized written guide while preserving all important instructional content from the original video.\n\nCapture every significant step, technique, workflow, recommendation, and explanation presented by the creator. Do not omit important details simply for brevity. Instead, reorganize the information into a logical, easy-to-follow reference document that someone could successfully complete without repeatedly watching the video.\n\nBe hyper-specific regarding user interface interactions. Describe the exact action (e.g., click, double-click, drag), the physical location on the screen (e.g., \"top-right corner\", \"bottom navigation bar\"), and visually describe the elements (e.g., \"the gear-shaped Settings icon\", \"the blue 'Submit' button\").\n\n## Formatting Requirements (Mandatory)\n\nYou must place every primary step and every substep on its own independent line. Never group multiple actions into a single paragraph, numbered item, or bullet point.\n\nUse a strict, unique alphanumeric hierarchical numbering system so every line can be easily referenced (for example: 1, 1a, 1b, 1c, 2, 2a, 2b, 2c).\n\nEvery action, setting change, menu selection, command, prompt, shortcut, and decision point must receive its own unique numbered line.\n\nUse descriptive headings, numbered sections, bullet lists, and tables where appropriate to maximize readability.\n\nInclude a heading with the video title, author, publish date, and a hyperlink to the video.\n\nOrganize the document using the following structure:\n\n• Overview\n  - Write a 5-sentence introductory paragraph summarizing what the tutorial teaches: (1) brief, high-level background context on the topic, (2) the specific skill or outcome the viewer will accomplish by the end of the video, and (3) delivered in an engaging, conversational, direct tone.\n  - Intended audience\n  - Expected outcome\n\n• Tools, Software, and Resources\n  - List every tool, website, application, AI model, plugin, prompt library, or resource mentioned.\n  - Include links when available.\n\n• Prerequisites\n  - Required accounts\n  - Software installations\n  - Downloads\n  - Initial setup\n  - Prior knowledge\n\n• Step-by-Step Instructions\n  - Break the tutorial into clearly numbered sections.\n  - Preserve the original workflow and sequence.\n  - Explain every step thoroughly.\n  - Include all settings, options, parameters, configuration values, shortcuts, and menu selections.\n  - Never combine multiple actions into one numbered item.\n\n• Prompts, Commands, and Templates\n  - Extract every AI prompt, command, code snippet, workflow, template, or reusable example shown in the tutorial.\n  - Format each one for easy copying.\n\n• Tips, Best Practices, and Recommendations\n  - Capture optimization techniques, efficiency improvements, shortcuts, expert advice, and recommended workflows mentioned throughout the tutorial.\n\n• Common Pitfalls and Important Notes\n  - Highlight warnings, limitations, assumptions, caveats, prerequisites, and frequently overlooked details mentioned by the creator.\n\n• Summary\n  - Briefly summarize the overall workflow.\n  - Highlight the key takeaways and major concepts learned.\n\nMaintain the instructional intent of the original tutorial while improving organization, readability, and clarity.\n\nPreserve technical accuracy while rewriting the content into a polished reference document suitable for future use." },
+                executive_summary: { title: "Executive Summary", desc: "Create a concise executive summary highlighting the most important findings, conclusions, and recommendations.", snippet: "Produce a professional Executive Summary suitable for senior decision-makers.\n\nSummarize the supplied information into a concise, high-impact overview that can be understood without reading the complete report.\n\nInclude:\n\n• Purpose\n• Background\n• Key Findings\n• Critical Evidence\n• Risks\n• Conclusions\n• Recommended Actions\n\nLimit unnecessary detail while preserving the most important information." },
+                decision_brief: { title: "Decision Brief", desc: "Summarize options, trade-offs, and recommendations to support informed decision-making.", snippet: "Produce a Decision Brief designed to help a decision-maker evaluate available options.\n\nInclude:\n\n• Executive Summary\n• Problem Statement\n• Available Options\n• Benefits\n• Risks\n• Trade-offs\n• Costs\n• Supporting Evidence\n• Recommendation\n• Decision Considerations\n\nPresent information objectively while explaining the reasoning behind the recommended option." },
+                best_practices_guide: { title: "Best Practices Guide", desc: "Compile proven methods, recommendations, and practical guidance into a reference guide.", snippet: "Create a Best Practices Guide by identifying the most effective techniques, recommendations, and recurring successful approaches found across the supplied sources.\n\nOrganize the guide into:\n\n• Introduction\n• Best Practices\n• Practical Examples\n• Common Mistakes\n• Recommendations\n• Implementation Tips\n\nFocus on actionable guidance supported by evidence." },
+                lessons_learned: { title: "Lessons Learned Report", desc: "Capture successes, failures, and recommendations from completed projects or case studies.", snippet: "Produce a Lessons Learned Report summarizing the key successes, challenges, mistakes, and improvements identified within the supplied information.\n\nInclude:\n\n• Project Overview\n• What Worked Well\n• Challenges Encountered\n• Lessons Learned\n• Recommendations\n• Future Considerations\n\nEmphasize practical improvements for future work." },
+                action_plan: { title: "Action Plan", desc: "Generate a prioritized implementation plan with actionable next steps.", snippet: "Create a practical Action Plan based on the supplied information.\n\nOrganize recommendations into:\n\n• Objectives\n• Priority Actions\n• Responsible Parties (if known)\n• Timeline\n• Dependencies\n• Success Metrics\n• Risks\n• Next Steps\n\nPresent recommendations in logical implementation order." }
+            },
+            lengthConstraints: {
+                preset_exec_summary: { title: "Executive Summary (1–2 Pages)", desc: "Summarizes only the most important findings and recommendations.", snippet: "Generate a concise executive summary approximately 1–2 pages in length. Focus only on the most important findings, recommendations, and conclusions while eliminating unnecessary background information and repetition.", needsNumber: false },
+                preset_brief_report: { title: "Brief Report (3–5 Pages)", desc: "Covers the essential topics with moderate detail.", snippet: "Generate a report approximately 3–5 pages in length. Cover the essential topics using concise explanations, supporting evidence, and clear conclusions while avoiding unnecessary expansion.", needsNumber: false },
+                preset_standard_report: { title: "Standard Report (6–10 Pages)", desc: "Provides balanced coverage with analysis and supporting evidence.", snippet: "Generate a report approximately 6–10 pages in length. Provide balanced coverage with appropriate background information, supporting evidence, analysis, and well-developed conclusions suitable for most professional, technical, or research documents.", needsNumber: false },
+                preset_comprehensive_report: { title: "Comprehensive Report (10–20 Pages)", desc: "Explores each topic with detailed analysis.", snippet: "Generate a report approximately 10–20 pages in length. Explore each major topic thoroughly using detailed explanations, supporting evidence, comparative analysis, and well-developed conclusions while maintaining a logical structure.", needsNumber: false },
+                preset_exhaustive_guide: { title: "Exhaustive Reference Guide (20+ Pages)", desc: "Produces the most complete document practical.", snippet: "Produce the most comprehensive document practical, typically exceeding 20 pages. Thoroughly explore every major topic using extensive supporting evidence, multiple perspectives, historical context where appropriate, appendices, glossaries, reference tables, and supplemental material.", needsNumber: false },
+                exact_word_count: { title: "Exact Word Count", desc: "Targets a specific number of words.", snippet: "Target an output of exactly [INSERT NUMBER] words. Plan the document structure before writing and remain as close as reasonably possible to the requested length.", needsNumber: true, unit: "words" },
+                max_word_count: { title: "Maximum Word Count", desc: "Does not exceed a specified word limit.", snippet: "The completed document must not exceed [INSERT NUMBER] words. Prioritize the most important information while remaining within the specified limit.", needsNumber: true, unit: "words" },
+                approx_page_count: { title: "Approximate Page Count", desc: "Targets a specific number of formatted pages.", snippet: "Generate a document approximately [INSERT NUMBER] pages in length using standard document formatting. Balance depth and coverage naturally to achieve the requested length.", needsNumber: true, unit: "pages" }
+            },
+            analysisModules: {
+                source_quality_balance_review: { title: "Source Quality & Balance Review", desc: "Reviews your sources for bias, missing viewpoints, missing data, unnecessary duplication, and recommendations for improving objectivity.", snippet: "Evaluate the source ecosystem itself.\n\nAssess:\n\n• Represented viewpoints\n• Missing perspectives\n• Overrepresented narratives\n• Redundant sources\n• Weak or low-signal sources\n• Structural bias patterns\n\nThen produce:\n\n• Source imbalance map\n• Recommended additional sources\n• Suggested removals or de-weighting\n• Overall bias assessment" },
+                methodology_comparison: { title: "Methodology Comparison Table", desc: "Compare multiple methods, frameworks, or approaches using structured tables and objective analysis.", snippet: "Act as a research analyst comparing multiple methodologies, frameworks, or approaches.\n\nFor each method, provide:\n\n• Purpose and intended use case\n• Core principles and assumptions\n• Step-by-step operational logic (if applicable)\n• Strengths supported by evidence\n• Weaknesses and limitations\n• Ideal use cases\n• Failure conditions\n• Resource requirements\n• Practical trade-offs\n\nThen provide:\n\n• Direct comparison across all methods\n• Key differentiators\n• Contexts where each performs best\n• Final synthesis of findings" },
+                cross_source_synthesis: { title: "Cross-Source Literature Synthesis", desc: "Combine insights from all sources into one cohesive analysis instead of reviewing each source separately.", snippet: "Synthesize all provided sources into a unified analytical framework.\n\nIdentify:\n\n• Shared themes across sources\n• Contradictions and inconsistencies\n• Evolving or emerging ideas\n• Areas of agreement vs disagreement\n• Missing perspectives or gaps in coverage\n• Structural patterns in the literature\n\nThen produce:\n\n• Integrated narrative synthesis\n• Consolidated conclusions\n• Research gaps requiring further evidence" },
+                evidence_claim_review: { title: "Evidence For & Against a Claim", desc: "Identify supporting and opposing evidence for a claim with citations and confidence assessment.", snippet: "Evaluate a claim using only provided evidence.\n\nStructure:\n\nSupporting Evidence\n• Extract all relevant supporting claims\n• Evaluate strength of each\n• Identify source reliability\n\nContradicting Evidence\n• Extract opposing claims\n• Evaluate strength and credibility\n\nThen conclude:\n\n• Evidence balance assessment\n• Confidence rating\n• Key uncertainties" },
+                critical_debate_matrix: { title: "Critical Debate Matrix", desc: "Compare opposing viewpoints using evidence, counterarguments, and unresolved questions.", snippet: "Construct a structured debate between competing viewpoints.\n\nInclude:\n\n• Position A vs Position B (or multiple positions)\n• Arguments for each side\n• Supporting evidence\n• Weaknesses and assumptions\n• Logical gaps\n• Unresolved tensions\n\nThen provide:\n\n• Comparative analysis\n• Areas of convergence\n• Areas requiring further evidence" },
+                structured_option_analysis: { title: "Structured Option Analysis", desc: "Compare available options, evaluating benefits, risks, costs, and trade-offs.", snippet: "Evaluate multiple options in a decision-making framework.\n\nFor each option:\n\n• Description\n• Benefits\n• Costs\n• Risks\n• Constraints\n• Resource requirements\n• Strategic implications\n\nThen:\n\n• Direct comparison table\n• Ranking of options\n• Justified recommendation" },
+                clinical_specialized_report: { title: "Clinical / Specialized Report", desc: "Generate a professional evidence-based report for medical, scientific, legal, or other specialized subjects.", snippet: "Produce a professional specialized report based solely on the supplied evidence.\n\nStructure the report using:\n\n• Executive Summary\n• Background\n• Evidence Review\n• Findings\n• Analysis\n• Limitations\n• Conclusions\n• References\n\nDo not speculate or provide unsupported recommendations.\n\nClearly distinguish established evidence from uncertainty." },
+                risk_assessment: { title: "Risk Assessment", desc: "Identify potential risks, evaluate their impact, and recommend mitigation strategies.", snippet: "Analyze the supplied information for potential risks.\n\nFor every identified risk evaluate:\n\n• Description\n• Likelihood\n• Potential Impact\n• Supporting Evidence\n• Mitigation Strategies\n• Residual Risk\n\nRank risks from highest to lowest priority." },
+                swot_analysis: { title: "SWOT Analysis", desc: "Evaluate strengths, weaknesses, opportunities, and threats using supplied evidence.", snippet: "Produce a formal SWOT Analysis.\n\nIdentify:\n\n• Strengths\n• Weaknesses\n• Opportunities\n• Threats\n\nSupport each observation using evidence from the supplied sources.\n\nConclude with strategic recommendations." },
+                root_cause_analysis: { title: "Root Cause Analysis", desc: "Identify underlying causes of problems instead of focusing only on symptoms.", snippet: "Conduct a Root Cause Analysis using the supplied information.\n\nIdentify:\n\n• Problem Statement\n• Contributing Factors\n• Root Causes\n• Supporting Evidence\n• Impact\n• Corrective Actions\n• Preventive Recommendations\n\nClearly distinguish symptoms from underlying causes." },
+                fact_check: { title: "Fact Check & Claim Verification", desc: "Verify factual claims against the supplied evidence and identify unsupported statements.", snippet: "Review the supplied information and evaluate every significant factual claim.\n\nFor each claim provide:\n\n• Claim\n• Evidence Supporting the Claim\n• Contradictory Evidence\n• Confidence Level\n• Overall Assessment\n\nClearly distinguish verified information from unsupported assertions or speculation." },
+                stakeholder_analysis: { title: "Stakeholder Analysis", desc: "Identify stakeholders, their interests, influence, responsibilities, and potential concerns.", snippet: "Identify every stakeholder referenced within the supplied information.\n\nFor each stakeholder evaluate:\n\n• Role\n• Objectives\n• Interests\n• Level of Influence\n• Potential Concerns\n• Relationships\n• Recommended Engagement Strategy\n\nSummarize how stakeholder priorities affect the overall topic." },
+                myth_vs_fact: { title: "Myth vs. Fact", desc: "Separate common misconceptions from evidence-based facts.", snippet: "Produce a Myth vs. Fact analysis.\n\nIdentify common misconceptions related to the topic and evaluate each one using the supplied evidence.\n\nFor every entry include:\n\n• Myth\n• Fact\n• Supporting Evidence\n• Explanation\n\nPresent findings in an easy-to-read table followed by summary observations." },
+                policy_impact: { title: "Policy Impact Assessment", desc: "Evaluate how a policy, regulation, or decision affects stakeholders, operations, and outcomes.", snippet: "Evaluate the impact of the supplied policy, regulation, or organizational decision.\n\nAnalyze:\n\n• Purpose\n• Stakeholders Affected\n• Benefits\n• Risks\n• Economic Impact\n• Operational Impact\n• Long-Term Implications\n• Recommendations\n\nSupport conclusions using evidence from the supplied material." },
+                key_findings: { title: "Key Findings", desc: "Identify and explain the most important discoveries, conclusions, and takeaways from the provided sources.", snippet: "Your primary objective is to identify the most important findings across all supplied sources.\n\nSelect the most significant discoveries and explain:\n\n• What was found\n• Why it matters\n• Supporting evidence\n• Practical implications\n\nRank findings from most to least significant.\n\nAvoid repeating minor details." },
+                comp_strategy: { title: "Competitive Analysis", desc: "Analyze competitors, market positioning, strengths, weaknesses, opportunities, and strategic advantages.", snippet: "Conduct a comprehensive competitive analysis using the supplied information.\n\nEvaluate:\n\n• Competitive Landscape\n• Market Position\n• Strengths\n• Weaknesses\n• Opportunities\n• Threats\n• Competitive Advantages\n• Strategic Recommendations\n\nSupport conclusions with evidence whenever possible." },
+                scenario_cast: { title: "Scenario Forecast", desc: "Explore realistic future outcomes, estimate their likelihood, and identify key factors that could influence them.", snippet: "Develop multiple evidence-based future scenarios using the supplied information.\n\nFor each scenario include:\n\n• Description\n• Probability\n• Driving Factors\n• Risks\n• Opportunities\n• Early Warning Indicators\n• Potential Outcomes\n\nFinish by identifying the most likely scenario and explain why." },
+                concept_simp: { title: "Concept Simplification", desc: "Transform complex topics into clear, beginner-friendly explanations without losing important meaning.", snippet: "Explain the topic in language appropriate for someone with little or no prior knowledge.\n\nUse:\n\n• Simple language\n• Step-by-step explanations\n• Analogies\n• Examples\n• Definitions\n\nDefine technical terminology before using it.\n\nMaintain accuracy while maximizing clarity." },
+                anomaly_detect: { title: "Anomaly Detection", desc: "Identify inconsistencies, conflicting evidence, missing information, unusual patterns, and possible errors.", snippet: "Review the supplied information for anomalies, inconsistencies, and potential issues.\n\nIdentify:\n\n• Contradictory Statements\n• Conflicting Evidence\n• Missing Information\n• Unusual Patterns\n• Unsupported Conclusions\n• Logical Gaps\n• Data Quality Issues\n\nFor every anomaly explain:\n\n• Why it was flagged\n• Supporting evidence\n• Possible explanations\n• Recommended follow-up investigation\n\nRemain objective and avoid unsupported speculation." }
+            },
+            companionOutputs: {
+                faq: { title: "FAQ", desc: "Generates a structured FAQ addressing common questions, misinterpretations, and edge cases.", snippet: "Generate a structured FAQ section.\n\nInclude:\n\n• Common questions\n• Misinterpretations\n• Edge cases\n• Clarifications based on source material" },
+                timeline_reconstruction: { title: "Timeline Reconstruction", desc: "Reconstructs key events into a clear, chronological timeline with supporting context.", snippet: "Reconstruct events chronologically.\n\nInclude:\n\n• Date / time period\n• Event description\n• Context\n• Significance\n• Supporting evidence" },
+                annotated_reading_order: { title: "Annotated Reading Order", desc: "Recommends the best reading sequence and explains why each source comes next.", snippet: "Recommend optimal reading sequence.\n\nFor each source:\n\n• Position in sequence\n• Why it appears here\n• Prerequisite knowledge\n• Key takeaway\n• Difficulty level" },
+                interactive_data_table: { title: "Interactive Data Table", desc: "Extracts key metrics, financial figures, dates, and other structured data into clean, organized tables.", snippet: "Extract structured quantitative data:\n\n• Metrics\n• Financial figures\n• Dates\n• Measurements\n• Statistics\n\nOrganize into clean structured tables." },
+                missed_insights: { title: "Frequently Missed Insights", desc: "Surfaces valuable observations that readers often overlook or underestimate.", snippet: "Identify overlooked insights:\n\n• Under-discussed findings\n• Hidden relationships\n• Non-obvious patterns\n• Misinterpreted data\n• High-value but overlooked conclusions" }
+            },
+            productivityTools: {
+                executive_dashboard: { title: "Executive Dashboard", desc: "Adds a condensed, decision-ready summary with key metrics and strategic signals.", snippet: "Create a condensed decision-ready summary including:\n\n• Key metrics\n• High-level findings\n• Risk indicators\n• Strategic signals\n• Summary tables" },
+                glossary: { title: "Glossary", desc: "Adds a glossary defining technical terms and domain-specific vocabulary.", snippet: "Define key terms used throughout the document, including:\n\n• Technical terms\n• Domain-specific vocabulary\n• Concepts introduced in the document" },
+                acronym_list: { title: "Acronym List", desc: "Adds a list spelling out every abbreviation and acronym used in the document.", snippet: "Provide full expansions of all abbreviations and acronyms used in the document." },
+                quote_extractor: { title: "Quote Extractor", desc: "Pulls out important statements, notable quotes, and high-signal excerpts.", snippet: "Collect key passages from the sources, including:\n\n• Important statements\n• Notable quotes\n• High-signal excerpts" },
+                key_statistics_table: { title: "Key Statistics Table", desc: "Consolidates every numerical figure from the sources into one structured table.", snippet: "Extract and consolidate all numerical data from the sources into a single structured table." },
+                checklist_generator: { title: "Checklist Generator", desc: "Converts findings into an actionable checklist of tasks and completion criteria.", snippet: "Convert findings into actionable steps, including:\n\n• Tasks\n• Subtasks\n• Dependencies\n• Completion criteria" },
+                appendix_builder: { title: "Appendix Builder", desc: "Organizes supplementary notes, tables, and references into an appendix.", snippet: "Organize supporting material into an appendix, including:\n\n• Extended notes\n• Supplementary tables\n• References\n• Additional context" },
+                terminology_index: { title: "Terminology Index", desc: "Builds an alphabetical index of key concepts with context summaries.", snippet: "Build an alphabetical index of:\n\n• Key concepts\n• Where they appear\n• Context summaries" }
+            },
+            toneStyle: {
+                formal_professional: { title: "Formal & Professional", desc: "Write using a polished, professional tone appropriate for business, academic, and formal communications.", snippet: "Write using a formal, professional tone throughout the document.\n\nUse precise language, logical organization, and complete sentences. Avoid slang, humor, unnecessary embellishment, or conversational expressions.\n\nMaintain a respectful, objective writing style while emphasizing clarity, accuracy, and professionalism." },
+                friendly_conversational: { title: "Friendly & Conversational", desc: "Write in a warm, engaging style that feels approachable and easy to read.", snippet: "Write in a friendly, conversational tone that feels natural and engaging.\n\nExplain ideas clearly using approachable language while maintaining factual accuracy.\n\nAvoid sounding overly formal or overly casual." },
+                empathetic_clear: { title: "Empathetic & Clear", desc: "Communicate with compassion, understanding, and easy-to-follow explanations.", snippet: "Write with empathy, patience, and understanding.\n\nUse supportive language that acknowledges the reader's perspective while explaining concepts clearly and respectfully.\n\nPrioritize clarity and reassurance without sacrificing accuracy." },
+                persuasive_urgent: { title: "Persuasive & Urgent", desc: "Encourage action using compelling arguments and clear calls to action.", snippet: "Write in a persuasive style designed to motivate action.\n\nSupport arguments with evidence, emphasize benefits and consequences, and conclude with clear recommendations or calls to action.\n\nRemain credible and avoid exaggeration." },
+                technical_precise: { title: "Technical & Precise", desc: "Use accurate technical terminology and detailed, structured explanations.", snippet: "Write for a technically knowledgeable audience.\n\nUse precise terminology, structured explanations, and technical accuracy.\n\nAvoid unnecessary simplification while defining specialized terminology when appropriate." },
+                informative_authoritative: { title: "Informative & Authoritative", desc: "Present information confidently using evidence, facts, and reliable sources.", snippet: "Educate the reader using a confident, authoritative tone grounded in evidence.\n\nPresent information objectively, explain supporting evidence clearly, and avoid unsupported opinions or speculation." },
+                constructively_skeptical: { title: "Constructively Skeptical", desc: "Critically evaluate claims while remaining fair, balanced, and evidence-based.", snippet: "Approach every claim with healthy skepticism.\n\nEvaluate evidence critically, identify assumptions, acknowledge limitations, and distinguish verified facts from interpretation.\n\nChallenge unsupported conclusions while remaining objective." },
+                objective_neutral: { title: "Objective & Neutral", desc: "Present balanced information without bias or personal opinion.", snippet: "Maintain a neutral, impartial writing style throughout.\n\nPresent all major viewpoints fairly, avoid emotionally charged language, and clearly distinguish facts from interpretation.\n\nDo not advocate for any position unless supported by the supplied evidence." },
+                analytical_strategic: { title: "Analytical & Strategic", desc: "Focus on analysis, planning, long-term thinking, and informed decision-making.", snippet: "Write from an analytical, strategic perspective.\n\nEmphasize relationships, trends, risks, opportunities, and long-term implications.\n\nSupport recommendations using evidence and logical reasoning." },
+                accessible_encouraging: { title: "Accessible & Encouraging", desc: "Explain ideas in simple language while encouraging learning and confidence.", snippet: "Write using plain language that is easy for a broad audience to understand.\n\nEncourage curiosity and learning while explaining concepts step by step.\n\nUse positive, supportive language without oversimplifying important information." }
+            },
+            targetAudience: {
+                executive_leadership: { title: "Executive Leadership", desc: "Focus on strategic insights, business impact, risks, and executive-level recommendations.", snippet: "Write for executive leaders who need concise, high-impact information.\n\nPrioritize strategic insights, measurable outcomes, financial implications, business risks, opportunities, and actionable recommendations.\n\nFront-load the Executive Summary with the most important conclusions." },
+                general_public: { title: "Beginners / General Public", desc: "Use plain language with simple explanations for readers with little prior knowledge.", snippet: "Assume the reader has little or no prior knowledge of the topic.\n\nUse plain language, define technical terms before using them, and explain concepts through practical examples and analogies whenever helpful.\n\nTarget approximately an eighth-grade reading level unless otherwise specified." },
+                technical_sme: { title: "Technical Subject Matter Experts (SMEs)", desc: "Provide detailed technical analysis for experienced professionals and specialists.", snippet: "Assume the audience consists of experienced subject matter experts.\n\nUse appropriate technical terminology, detailed explanations, and domain-specific concepts without unnecessary simplification.\n\nFocus on depth, precision, and evidence." },
+                peer_review: { title: "Peer Review Panel", desc: "Prepare a rigorous, evidence-based document suitable for academic or professional review.", snippet: "Write as though the document will be evaluated by an expert peer review committee.\n\nMaintain academic rigor, provide balanced analysis, support claims with evidence, acknowledge limitations, and avoid unsupported conclusions." },
+                undergraduate_students: { title: "Undergraduate Students", desc: "Present college-level explanations that balance detail with readability.", snippet: "Write for undergraduate university students.\n\nAssume foundational knowledge but explain advanced concepts carefully.\n\nUse educational examples and maintain an appropriate balance between accessibility and academic depth." },
+                venture_capital: { title: "Venture Capital / Investors", desc: "Emphasize market opportunity, growth potential, competitive advantage, and investment risk.", snippet: "Write for investors evaluating potential opportunities.\n\nFocus on market size, competitive positioning, scalability, financial potential, business risks, return on investment, and strategic advantages.\n\nPresent information clearly and support conclusions with evidence." }
+            },
+            readingLevel: {
+                elementary: { title: "Elementary School", desc: "Very simple vocabulary, short sentences, and basic concepts.", snippet: "Write at an elementary school reading level using very simple vocabulary, short sentences, and basic concepts." },
+                middle_school: { title: "Middle School", desc: "Simple, clear language with straightforward sentence structure.", snippet: "Write at a middle school reading level using simple, clear language and straightforward sentence structure." },
+                high_school: { title: "High School", desc: "Accessible language with moderate vocabulary and sentence complexity.", snippet: "Write at a high school reading level using accessible language with moderate vocabulary and sentence complexity." },
+                college: { title: "College", desc: "Standard academic vocabulary and more developed sentence structure.", snippet: "Write at a college reading level using standard academic vocabulary and more developed sentence structure." },
+                graduate_school: { title: "Graduate School", desc: "Advanced vocabulary, nuanced argumentation, and complex sentence structure.", snippet: "Write at a graduate school reading level using advanced vocabulary, nuanced argumentation, and complex sentence structure." },
+                professional: { title: "Professional", desc: "Industry-standard terminology suited for working professionals.", snippet: "Write at a professional reading level using industry-standard terminology suited for working professionals." },
+                expert: { title: "Expert", desc: "Highly technical language assuming deep prior expertise.", snippet: "Write at an expert reading level using highly technical language that assumes deep prior expertise in the subject." }
+            },
+            citationRules: {
+                mla_8: { title: "MLA 8th Edition", desc: "Format all citations and references using MLA 8th Edition guidelines.", snippet: "Format all in-text citations and the Works Cited section according to MLA 8th Edition guidelines.\n\nEnsure citation formatting remains consistent throughout the document." },
+                apa_7: { title: "APA 7th Edition", desc: "Format all citations and references using APA 7th Edition standards.", snippet: "Apply APA 7th Edition formatting throughout the document.\n\nUse Author-Date in-text citations and provide a complete References section following APA formatting rules." },
+                chicago_footnotes: { title: "Chicago Footnotes", desc: "Use Chicago Manual of Style with numbered footnotes and bibliography.", snippet: "Format the document according to the Chicago Manual of Style.\n\nUse numbered footnotes for citations and include a complete bibliography at the end of the document." },
+                mla_ai: { title: "MLA AI Citation Rule", desc: "Apply MLA guidance for acknowledging AI-assisted content when appropriate.", snippet: "When content is generated, summarized, or substantially assisted by AI, clearly identify the AI contribution following current MLA guidance.\n\nPreserve normal MLA citation formatting for all non-AI sources." }
+            },
+            sourceAttribution: {
+                cite_every_claim: { title: "Cite every factual claim", desc: "Adds an in-text citation after each factual statement.", snippet: "Add an in-text citation immediately after every factual claim made in the document." },
+                cite_major_findings: { title: "Cite major findings only", desc: "Citations appear only for key findings and conclusions.", snippet: "Add in-text citations only for major findings, key conclusions, and significant claims. Do not cite minor or supporting details." },
+                cite_direct_quotes: { title: "Cite direct quotations only", desc: "Citations appear only next to direct quotations.", snippet: "Add in-text citations only when directly quoting a source. Paraphrased content does not require an inline citation." },
+                footnotes: { title: "Footnotes", desc: "Uses numbered footnotes at the bottom of each page or section.", snippet: "Use numbered footnotes at the bottom of the relevant page or section for all source attributions." },
+                endnotes: { title: "Endnotes", desc: "Uses numbered endnotes collected at the end of the document.", snippet: "Use numbered endnotes collected at the end of the document for all source attributions." },
+                no_inline_citations: { title: "No inline citations", desc: "Omits inline citations entirely.", snippet: "Do not include any inline citations within the body of the document." }
+            },
+            referenceSection: {
+                none: { title: "None", desc: "No reference section is included.", snippet: "Do not include a references, works cited, or bibliography section." },
+                references: { title: "References", desc: "Adds a References section at the end of the document.", snippet: "Include a References section at the end of the document listing all sources used." },
+                works_cited: { title: "Works Cited", desc: "Adds a Works Cited section at the end of the document.", snippet: "Include a Works Cited section at the end of the document listing all sources used." },
+                bibliography: { title: "Bibliography", desc: "Adds a Bibliography section at the end of the document.", snippet: "Include a Bibliography section at the end of the document listing all sources used." },
+                annotated_bibliography: { title: "Annotated Bibliography", desc: "Adds a bibliography with a brief summary beneath each entry.", snippet: "Include an Annotated Bibliography at the end of the document, providing a brief summary beneath each source entry explaining its relevance and content." }
+            },
+            tablePreference: {
+                automatic: { title: "Automatic (Recommended)", desc: "Let the AI decide when tables improve readability.", snippet: "Use tables whenever they naturally improve the clarity of the information. Use your own judgment on when a table communicates better than prose." },
+                readability: { title: "Use tables whenever they improve readability", desc: "Favors tables any time they make information easier to scan.", snippet: "Convert information into tables whenever doing so improves readability, even for content that is not strictly numerical." },
+                comparisons_only: { title: "Use tables only for comparisons", desc: "Restricts tables to side-by-side comparisons.", snippet: "Only use tables when comparing two or more items, options, or categories. Do not use tables for any other purpose." },
+                numerical_only: { title: "Use tables only for numerical data", desc: "Restricts tables to numbers, statistics, and figures.", snippet: "Only use tables to present numerical data, statistics, or quantitative figures. Do not use tables for non-numerical content." },
+                whenever_practical: { title: "Use tables whenever practical", desc: "Leans toward tables over prose whenever reasonable.", snippet: "Use tables whenever it is practical to do so, favoring tabular structure over prose paragraphs where reasonable." },
+                minimize: { title: "Minimize tables", desc: "Uses tables only when prose genuinely falls short.", snippet: "Minimize the use of tables. Prefer prose and only use a table when the information would be genuinely difficult to understand otherwise." },
+                none: { title: "Do not generate tables", desc: "Presents all information in prose or list form instead.", snippet: "Do not generate any tables in this document. Present all information in prose or list form instead." }
+            },
+            chartPreference: {
+                automatic: { title: "Automatic (Recommended)", desc: "Let the AI decide which charts, if any, aid comprehension.", snippet: "Generate charts or visualizations whenever they would meaningfully improve comprehension of the content. Use your own judgment on chart type." },
+                whenever_appropriate: { title: "Generate charts whenever appropriate", desc: "Adds charts to illustrate trends, relationships, or patterns.", snippet: "Generate charts whenever appropriate to illustrate trends, relationships, or data patterns discussed in the document." },
+                bar_only: { title: "Generate only bar charts", desc: "Restricts all visualizations to bar charts.", snippet: "When a chart is warranted, use only bar charts. Do not use other chart types." },
+                line_only: { title: "Generate only line charts", desc: "Restricts all visualizations to line charts.", snippet: "When a chart is warranted, use only line charts. Do not use other chart types." },
+                pie_only: { title: "Generate only pie charts", desc: "Restricts all visualizations to pie charts.", snippet: "When a chart is warranted, use only pie charts. Do not use other chart types." },
+                flow_only: { title: "Generate only flow charts", desc: "Restricts all visualizations to flow charts.", snippet: "When a chart is warranted, use only flow charts. Do not use other chart types." },
+                timelines_only: { title: "Generate only timelines", desc: "Restricts all visualizations to timeline graphics.", snippet: "When a chart is warranted, use only timeline visualizations. Do not use other chart types." },
+                org_charts: { title: "Generate organizational charts when applicable", desc: "Adds org charts for hierarchies and reporting structures.", snippet: "Generate organizational charts whenever hierarchical relationships, reporting structures, or team structures are discussed." },
+                comparison_matrices: { title: "Generate comparison matrices", desc: "Adds matrices for side-by-side option evaluation.", snippet: "Generate comparison matrices whenever multiple options, products, or approaches are being evaluated side by side." },
+                none: { title: "Do not generate charts", desc: "Omits charts, graphs, and diagrams entirely.", snippet: "Do not generate any charts, graphs, or diagrams in this document." }
+            },
+            visualEmphasis: {
+                callout_boxes: { title: "Use callout boxes for important information", desc: "", snippet: "Use visually distinct callout boxes to highlight especially important information." },
+                highlight_stats: { title: "Highlight key statistics", desc: "", snippet: "Highlight key statistics using visually distinct callout boxes or emphasis so they stand out from the surrounding text." },
+                comparison_tables: { title: "Use comparison tables", desc: "", snippet: "Generate comparison tables whenever multiple options are evaluated." },
+                summary_tables: { title: "Add summary tables", desc: "", snippet: "Add summary tables that condense key points at the end of major sections." },
+                decision_matrices: { title: "Include decision matrices", desc: "", snippet: "Include decision matrices when evaluating options against multiple weighted criteria." },
+                pros_cons_tables: { title: "Include pros & cons tables", desc: "", snippet: "Include pros and cons tables whenever trade-offs between options or approaches are discussed." },
+                timelines: { title: "Include timelines where applicable", desc: "", snippet: "Include timelines whenever chronological events are discussed." },
+                process_flow_diagrams: { title: "Include process flow diagrams when appropriate", desc: "", snippet: "Use process flow diagrams for workflows whenever appropriate." },
+                checklists: { title: "Include checklists where appropriate", desc: "", snippet: "Include checklists wherever step-by-step actions or requirements are described." },
+                icons_emoji: { title: "Include icons or emoji for visual scanning (when appropriate)", desc: "", snippet: "Include icons or emoji sparingly to aid visual scanning, where appropriate for the tone and audience of the document." }
+            },
+            figureStyle: {
+                professional: { title: "Professional", desc: "A polished, business-appropriate look.", snippet: "Render all charts and diagrams using a professional visual style." },
+                minimal: { title: "Minimal", desc: "Clean and understated, with limited ornamentation.", snippet: "Render all charts and diagrams using a minimal, clean visual style with limited ornamentation." },
+                academic: { title: "Academic", desc: "Suited for scholarly or research publications.", snippet: "Render all charts and diagrams using an academic visual style suitable for scholarly publications." },
+                executive_presentation: { title: "Executive Presentation", desc: "Polished and boardroom-ready.", snippet: "Render all charts and diagrams using a polished, executive-presentation visual style." },
+                modern_business: { title: "Modern Business", desc: "Contemporary and business-oriented.", snippet: "Render all charts and diagrams using a modern business visual style." },
+                colorful: { title: "Colorful", desc: "Vibrant and visually engaging.", snippet: "Render all charts and diagrams using a vibrant, colorful visual style." },
+                monochrome: { title: "Monochrome", desc: "Single-color or grayscale throughout.", snippet: "Render all charts and diagrams using a monochrome (single-color or grayscale) visual style." }
+            },
+            figureCaptions: {
+                none: { title: "No captions", desc: "Tables and figures appear without captions.", snippet: "Do not include captions on tables or figures." },
+                brief: { title: "Brief captions", desc: "A short, one-line caption per table or figure.", snippet: "Include brief, one-line captions for every table and figure." },
+                descriptive: { title: "Descriptive captions", desc: "Explains what each table or figure shows and why it matters.", snippet: "Include descriptive captions for every table and figure, explaining what it shows and why it matters." },
+                publication_quality: { title: "Publication-quality captions", desc: "Follows standard academic or professional captioning conventions.", snippet: "Include publication-quality captions for every table and figure, following standard academic or professional captioning conventions." }
+            },
+            visualAccessibility: {
+                high_contrast: { title: "Use high-contrast visuals", desc: "", snippet: "Ensure all visual elements use high-contrast colors for readability." },
+                color_blind_friendly: { title: "Ensure charts are color-blind friendly", desc: "", snippet: "Ensure all charts and graphs are color-blind friendly, using distinguishable patterns or colors accessible to common forms of color blindness." },
+                avoid_color_alone: { title: "Avoid relying on color alone", desc: "", snippet: "Avoid communicating meaning through color alone; use labels, patterns, or textures in addition to color." },
+                descriptive_captions_accessibility: { title: "Add descriptive captions for every visual", desc: "", snippet: "Add descriptive captions for every visual element to support accessibility." }
+            }
+        };
+
+        // Auto-match: writing style implied by each Document Type, used when the
+        // "Automatically match the writing style" checkbox in Section 7 is enabled.
+        const docTypeToneMap = {
+            briefing: "informative_authoritative",
+            study_guide: "accessible_encouraging",
+            blog_post: "friendly_conversational",
+            expl_essay: "accessible_encouraging",
+            deep_research: "objective_neutral",
+            comparative_essay: "analytical_strategic",
+            literature_review: "objective_neutral",
+            persuasive_essay: "persuasive_urgent",
+            whitepaper: "formal_professional",
+            roadmap: "analytical_strategic",
+            knowledge_primer: "accessible_encouraging",
+            youtube_tutorial: "friendly_conversational",
+            executive_summary: "informative_authoritative",
+            decision_brief: "analytical_strategic",
+            best_practices_guide: "informative_authoritative",
+            lessons_learned: "constructively_skeptical",
+            action_plan: "analytical_strategic"
+        };
+
+
+        // --- STATE MANAGEMENT ---
+        const state = {
+            customContext: "",
+            coreFormat: "",
+            lengthConstraint: "",
+            lengthNumber: "",
+            analysisModules: [],
+            analysisModulesStandalone: false,
+            companionOutputs: [],
+            companionOutputsStandalone: false,
+            productivityTools: [],
+            productivityToolsStandalone: false,
+            toneStyle: "",
+            autoMatchStyle: false,
+            targetAudience: "",
+            readingLevel: "",
+            citationRules: "",
+            sourceAttribution: "",
+            referenceSection: "",
+            typographyEnabled: false,
+            fonts: {}, // Populated dynamically on load
+            colors: { dominant: '', dominantCustom: '', secondary: '', secondaryCustom: '', accent: '', accentCustom: '' },
+            customColorInstructions: "",
+            tablePreference: "",
+            chartPreference: "",
+            visualEmphasis: [],
+            figureStyle: "",
+            figureCaptions: "",
+            numberFiguresAndTables: false,
+            visualAccessibility: []
+        };
+
+        // --- RENDERING FUNCTIONS ---
+        function populateDropdown(dropdownId, dataKey, defaultText) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.innerHTML = `<option value="">-- ${defaultText} --</option>`;
+            for (const [key, value] of Object.entries(promptData[dataKey])) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = `${value.title} — ${value.desc}`;
+                opt.title = value.snippet;
+                dropdown.appendChild(opt);
+            }
+        }
+
+        function renderCheckboxGroup(containerId, dataKey) {
+            const container = document.getElementById(containerId);
+            const entries = Object.entries(promptData[dataKey]);
+            container.innerHTML = entries.map(([key, value]) => `
+                <label for="chk-${dataKey}-${key}" class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 hover:border-brand-400 hover:bg-brand-50/40 cursor-pointer transition-colors">
+                    <input type="checkbox" id="chk-${dataKey}-${key}" onchange="toggleArrayItem('${dataKey}', '${key}', this.checked)" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 shrink-0">
+                    <span class="text-sm">
+                        <span class="font-medium text-slate-800">${value.title}</span>
+                        ${value.desc ? `<span class="block text-xs text-slate-600 mt-0.5">${value.desc}</span>` : ''}
+                    </span>
+                </label>
+            `).join('');
+        }
+
+        function renderFontInputs() {
+            const container = document.getElementById('font-inputs-container');
+
+            const buildOptions = (extra = []) => {
+                const list = [...fontOrder, ...extra];
+                return list.map(o => {
+                    const desc = fontPalette[o] ? ` — ${fontPalette[o]}` : '';
+                    const tip = fontPalette[o] || '';
+                    return `<option value="${o}" title="${tip}">${o}${desc}</option>`;
+                }).join('');
+            };
+            const defaultOptionsHtml = buildOptions();
+            const monoOptionsHtml = buildOptions(['JetBrains Mono Bold']);
+
+            container.innerHTML = fontElements.map(el => {
+                const optionsHtml = el.isMono ? monoOptionsHtml : defaultOptionsHtml;
+                
+                return `
+                <div class="grid grid-cols-12 gap-3 items-start">
+                    <label class="col-span-4 text-xs font-medium text-slate-700 mt-2">${el.label}</label>
+                    <div class="col-span-5 flex flex-col gap-1">
+                        <select id="font-select-${el.id}" onchange="handleIndividualFontChange('${el.id}', this.value)" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-shadow">
+                            <option value="">-- Select --</option>
+                            ${optionsHtml}
+                            <option value="Other">Other...</option>
+                        </select>
+                        <input type="text" id="font-custom-${el.id}" placeholder="Type font name..." class="hidden w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-shadow" oninput="updateFontState('${el.id}', 'custom', this.value)">
+                    </div>
+                    <div class="col-span-3">
+                        <input type="text" id="size-${el.id}" value="${el.defaultSize}" placeholder="Size" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-shadow" oninput="updateFontState('${el.id}', 'size', this.value)">
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // Builds one 60/30/10 color dropdown: recommended colors first (starred), then the rest of the palette
+        function getColorDropdown(stateKey) {
+            const roleInfo = colorRoleLabels[stateKey];
+            const recommended = colorRoleOrder[stateKey];
+            const rest = Object.keys(colorPalette).filter(k => !recommended.includes(k));
+
+            const buildOption = (key) => {
+                const c = colorPalette[key];
+                return `<option value="${key}" style="color:${c.hex}" title="${c.hex} — ${c.bestUse}">■ ${c.name} — ${c.hex} — ${c.bestUse}</option>`;
+            };
+
+            const recommendedHtml = recommended.map(key => buildOption(key)).join('');
+            const restHtml = rest.map(key => buildOption(key)).join('');
+            const brandingOptionHtml = stateKey === 'accent'
+                ? `<option value="match_branding" title="Use colors found in any supplied logo, branding, screenshots, or company materials whenever practical.">Match supplied branding</option>`
+                : '';
+
+            return `
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">${roleInfo.label}</label>
+                    <p class="text-[11px] text-slate-600 mb-2 mt-0.5 leading-tight">${roleInfo.desc}</p>
+                    <div class="flex flex-col gap-2">
+                        <select id="color-${stateKey}-select" onchange="handleColorChange('${stateKey}', this.value)" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-shadow">
+                            <option value="">-- Choose --</option>
+                            <optgroup label="Recommended for this role">${recommendedHtml}</optgroup>
+                            <optgroup label="More colors">${restHtml}${brandingOptionHtml}</optgroup>
+                            <option value="Other">Other... (Custom Hex)</option>
+                        </select>
+                        <input type="text" id="color-${stateKey}-custom" placeholder="Hex or Name..." class="hidden w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-shadow" oninput="updateColorState('${stateKey}', 'custom', this.value)">
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderColorInputs() {
+            const container = document.getElementById('colors-container');
+            container.innerHTML = getColorDropdown('dominant') + getColorDropdown('secondary') + getColorDropdown('accent');
+        }
+
+        function renderAllGrids() {
+            populateDropdown('coreFormat-dropdown', 'coreFormat', 'Choose a Document Type');
+            populateDropdown('lengthConstraints-dropdown', 'lengthConstraints', 'Choose an Output Length');
+            populateDropdown('toneStyle-dropdown', 'toneStyle', 'Choose a Writing Style');
+            populateDropdown('targetAudience-dropdown', 'targetAudience', 'Choose an Audience');
+            populateDropdown('readingLevel-dropdown', 'readingLevel', 'Automatic');
+            populateDropdown('citationRules-dropdown', 'citationRules', 'Choose a Citation Format');
+            populateDropdown('sourceAttribution-dropdown', 'sourceAttribution', 'Choose');
+            populateDropdown('referenceSection-dropdown', 'referenceSection', 'Choose');
+            populateDropdown('tablePreference-dropdown', 'tablePreference', 'Choose Table Preference');
+            populateDropdown('chartPreference-dropdown', 'chartPreference', 'Choose Chart Preference');
+            populateDropdown('figureStyle-dropdown', 'figureStyle', 'Choose');
+            populateDropdown('figureCaptions-dropdown', 'figureCaptions', 'Choose');
+            renderCheckboxGroup('analysisModules-container', 'analysisModules');
+            renderCheckboxGroup('companionOutputs-container', 'companionOutputs');
+            renderCheckboxGroup('productivityTools-container', 'productivityTools');
+            renderCheckboxGroup('visualEmphasis-container', 'visualEmphasis');
+            renderCheckboxGroup('visualAccessibility-container', 'visualAccessibility');
+            renderFontInputs();
+            renderColorInputs();
+        }
+
+        // --- INTERACTION HANDLERS ---
+        function updateState(key, value) {
+            state[key] = value;
+            updateMasterPrompt();
+        }
+
+        function clearContext() {
+            document.getElementById('custom-context').value = "";
+            state.customContext = "";
+            updateMasterPrompt();
+        }
+
+        function clearDropdown(dropdownId, stateKey) {
+            document.getElementById(dropdownId).value = "";
+            state[stateKey] = "";
+            updateMasterPrompt();
+        }
+
+        function clearLengthConstraint() {
+            clearDropdown('lengthConstraints-dropdown', 'lengthConstraint');
+            document.getElementById('length-number-container').classList.add('hidden');
+            document.getElementById('length-number-input').value = "";
+            document.getElementById('length-number-label').textContent = "Number of Words";
+            document.getElementById('length-number-input').placeholder = "e.g. 1500";
+            state.lengthNumber = "";
+            updateMasterPrompt();
+        }
+
+        function handleLengthConstraint(val) {
+            state.lengthConstraint = val;
+            const numContainer = document.getElementById('length-number-container');
+            const numLabel = document.getElementById('length-number-label');
+            const numInput = document.getElementById('length-number-input');
+            
+            if (val && promptData.lengthConstraints[val].needsNumber) {
+                const unit = promptData.lengthConstraints[val].unit;
+                if (unit === 'pages') {
+                    numLabel.textContent = "Number of Pages";
+                    numInput.placeholder = "e.g. 12";
+                } else {
+                    numLabel.textContent = "Number of Words";
+                    numInput.placeholder = "e.g. 1500";
+                }
+                numContainer.classList.remove('hidden');
+            } else {
+                numContainer.classList.add('hidden');
+                document.getElementById('length-number-input').value = "";
+                state.lengthNumber = "";
+            }
+            updateMasterPrompt();
+        }
+
+        // MULTI-SELECT CHECKBOX GROUPS (Analysis Modules / Companion Outputs / Productivity Tools)
+        function toggleArrayItem(stateArrayKey, itemKey, checked) {
+            const arr = state[stateArrayKey];
+            const idx = arr.indexOf(itemKey);
+            if (checked && idx === -1) arr.push(itemKey);
+            if (!checked && idx !== -1) arr.splice(idx, 1);
+            updateMasterPrompt();
+        }
+
+        function clearCheckboxGroup(stateArrayKey, dataKey) {
+            state[stateArrayKey] = [];
+            Object.keys(promptData[dataKey]).forEach(key => {
+                const el = document.getElementById(`chk-${dataKey}-${key}`);
+                if (el) el.checked = false;
+            });
+            updateMasterPrompt();
+        }
+
+        // TYPOGRAPHY ON/OFF TOGGLE
+        function toggleTypography() {
+            state.typographyEnabled = !state.typographyEnabled;
+            applyTypographyToggleUI();
+            updateMasterPrompt();
+        }
+
+        function applyTypographyToggleUI() {
+            const enabled = state.typographyEnabled;
+            const toggleBtn = document.getElementById('typography-toggle');
+            const toggleKnob = document.getElementById('typography-toggle-knob');
+            const panel = document.getElementById('typography-panel');
+            const label = document.getElementById('typography-toggle-label');
+
+            if (enabled) {
+                toggleBtn.classList.remove('bg-slate-300');
+                toggleBtn.classList.add('bg-brand-500');
+                toggleKnob.classList.remove('translate-x-0.5');
+                toggleKnob.classList.add('translate-x-5');
+                panel.classList.remove('opacity-40', 'pointer-events-none');
+                label.textContent = 'On';
+            } else {
+                toggleBtn.classList.add('bg-slate-300');
+                toggleBtn.classList.remove('bg-brand-500');
+                toggleKnob.classList.add('translate-x-0.5');
+                toggleKnob.classList.remove('translate-x-5');
+                panel.classList.add('opacity-40', 'pointer-events-none');
+                label.textContent = 'Off';
+            }
+        }
+
+        // STANDALONE DOCUMENTS ON/OFF TOGGLE (default OFF) — shared by Analysis Modules,
+        // Companion Outputs, and Productivity Tools (Sections 4-6)
+        function toggleStandalone(category) {
+            const key = category + 'Standalone';
+            state[key] = !state[key];
+            applyStandaloneToggleUI(category);
+            updateMasterPrompt();
+        }
+
+        function applyStandaloneToggleUI(category) {
+            const enabled = state[category + 'Standalone'];
+            const toggleBtn = document.getElementById(`standalone-toggle-${category}`);
+            const toggleKnob = document.getElementById(`standalone-toggle-knob-${category}`);
+            const label = document.getElementById(`standalone-toggle-label-${category}`);
+
+            if (enabled) {
+                toggleBtn.classList.remove('bg-slate-300');
+                toggleBtn.classList.add('bg-brand-500');
+                toggleKnob.classList.remove('translate-x-0.5');
+                toggleKnob.classList.add('translate-x-5');
+                label.textContent = 'On';
+            } else {
+                toggleBtn.classList.add('bg-slate-300');
+                toggleBtn.classList.remove('bg-brand-500');
+                toggleKnob.classList.add('translate-x-0.5');
+                toggleKnob.classList.remove('translate-x-5');
+                label.textContent = 'Off';
+            }
+        }
+
+        // WRITING STYLE: AUTO-MATCH TO DOCUMENT TYPE (checkbox, default OFF)
+        function toggleAutoMatchStyle(checked) {
+            state.autoMatchStyle = checked;
+            const dropdown = document.getElementById('toneStyle-dropdown');
+            if (checked) {
+                dropdown.classList.add('opacity-50', 'pointer-events-none');
+            } else {
+                dropdown.classList.remove('opacity-50', 'pointer-events-none');
+            }
+            updateMasterPrompt();
+        }
+
+        // FONT HANDLERS
+        function applyGlobalFont(value) {
+            const customInput = document.getElementById('global-font-custom');
+            
+            if (value === 'Other') {
+                customInput.classList.remove('hidden');
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+                
+                // Propagate to all font dropdowns
+                fontElements.forEach(el => {
+                    const select = document.getElementById(`font-select-${el.id}`);
+                    select.value = value;
+                    handleIndividualFontChange(el.id, value);
+                });
+            }
+        }
+
+        function applyGlobalCustomFont(value) {
+            fontElements.forEach(el => {
+                document.getElementById(`font-select-${el.id}`).value = 'Other';
+                state.fonts[el.id].selection = 'Other';
+                
+                const customInput = document.getElementById(`font-custom-${el.id}`);
+                customInput.classList.remove('hidden');
+                customInput.value = value;
+                state.fonts[el.id].custom = value;
+            });
+            updateMasterPrompt();
+        }
+
+        function handleIndividualFontChange(id, value) {
+            state.fonts[id].selection = value;
+            const customInput = document.getElementById(`font-custom-${id}`);
+            if (value === 'Other') {
+                customInput.classList.remove('hidden');
+            } else {
+                customInput.classList.add('hidden');
+                state.fonts[id].custom = '';
+                customInput.value = '';
+            }
+            updateMasterPrompt();
+        }
+
+        function updateFontState(id, field, value) {
+            state.fonts[id][field] = value;
+            updateMasterPrompt();
+        }
+
+        function clearFonts() {
+            document.getElementById('global-font-select').value = '';
+            const globalCustom = document.getElementById('global-font-custom');
+            globalCustom.value = '';
+            globalCustom.classList.add('hidden');
+
+            fontElements.forEach(el => {
+                state.fonts[el.id] = { selection: '', custom: '', size: el.defaultSize };
+                document.getElementById(`font-select-${el.id}`).value = '';
+                
+                const customInput = document.getElementById(`font-custom-${el.id}`);
+                customInput.value = '';
+                customInput.classList.add('hidden');
+                
+                document.getElementById(`size-${el.id}`).value = el.defaultSize;
+            });
+            updateMasterPrompt();
+        }
+
+        // Restores default font sizes only, preserving whichever font families are currently selected
+        function restoreRecommendedSizes() {
+            fontElements.forEach(el => {
+                state.fonts[el.id].size = el.defaultSize;
+                document.getElementById(`size-${el.id}`).value = el.defaultSize;
+            });
+            updateMasterPrompt();
+        }
+
+        // COLOR HANDLERS
+        function handleColorChange(key, value) {
+            state.colors[key] = value;
+            const customInput = document.getElementById(`color-${key}-custom`);
+            if (value === 'Other') {
+                customInput.classList.remove('hidden');
+            } else {
+                customInput.classList.add('hidden');
+                state.colors[`${key}Custom`] = '';
+                customInput.value = '';
+            }
+            updateMasterPrompt();
+        }
+
+        function updateColorState(key, type, value) {
+            if (type === 'custom') {
+                state.colors[`${key}Custom`] = value;
+            }
+            updateMasterPrompt();
+        }
+
+        function resolveColor(stateKey) {
+            const val = state.colors[stateKey];
+            if (!val) return "";
+            if (val === 'Other') return state.colors[`${stateKey}Custom`] || "";
+            if (val === 'match_branding') return "Match supplied branding — use colors found in any supplied logo, branding, screenshots, or company materials whenever practical";
+            const c = colorPalette[val];
+            return c ? `${c.name} (${c.hex})` : val;
+        }
+
+        function clearColors() {
+            state.colors = { dominant: '', dominantCustom: '', secondary: '', secondaryCustom: '', accent: '', accentCustom: '' };
+            state.customColorInstructions = '';
+            
+            ['dominant', 'secondary', 'accent'].forEach(key => {
+                document.getElementById(`color-${key}-select`).value = '';
+                const customInput = document.getElementById(`color-${key}-custom`);
+                customInput.value = '';
+                customInput.classList.add('hidden');
+            });
+            
+            document.getElementById('color-instructions').value = '';
+            updateMasterPrompt();
+        }
+
+        // --- MASTER COMPILING LOGIC ---
+        // Assembly order (fixed): Context -> Output Length -> Document Type -> Analysis Modules ->
+        // Companion Outputs -> Productivity Tools -> Writing Style -> Audience -> Citations ->
+        // Visual Formatting. Every module APPENDS; nothing overwrites anything else.
+
+        // Builds the compiled block for a checkbox module category (Analysis Modules,
+        // Companion Outputs, or Productivity Tools), framing selections as standalone
+        // documents when that category's toggle is on, or as appended sections otherwise.
+        function buildModuleBlock(stateArrayKey, label) {
+            const selected = state[stateArrayKey];
+            if (selected.length === 0) return null;
+
+            const data = promptData[stateArrayKey];
+            if (state[stateArrayKey + 'Standalone']) {
+                const blocks = selected.map(k => {
+                    const m = data[k];
+                    return `--- Standalone Document: ${m.title} ---\n${m.snippet}`;
+                }).join('\n\n');
+                return `[${label} — STANDALONE DOCUMENTS]\nProduce each of the following as a completely separate, standalone document, independent from the primary document above. Do not merge them into the main document or its sections.\n\n${blocks}`;
+            } else {
+                const text = selected.map(k => data[k].snippet).join('\n\n');
+                return `[${label}]\n${text}`;
+            }
+        }
+
+        function updateMasterPrompt() {
+            const parts = [];
+
+            // 1. Topics & Custom Context
+            if (state.customContext.trim()) {
+                parts.push(`[CONTEXT]\n${state.customContext.trim()}`);
+            }
+
+            // 2. Output Length
+            if (state.lengthConstraint) {
+                let snippet = promptData.lengthConstraints[state.lengthConstraint].snippet;
+                if (promptData.lengthConstraints[state.lengthConstraint].needsNumber) {
+                    const insertNum = state.lengthNumber.trim() ? state.lengthNumber : "[INSERT NUMBER]";
+                    snippet = snippet.replace("[INSERT NUMBER]", insertNum);
+                }
+                parts.push(`[OUTPUT LENGTH]\n${snippet}`);
+            }
+
+            // 3. Document Type
+            if (state.coreFormat) {
+                parts.push(`[DOCUMENT TYPE]\n${promptData.coreFormat[state.coreFormat].snippet}`);
+            }
+
+            // 4. Analysis Modules (stack cumulatively; can be requested as standalone documents)
+            const analysisModuleBlock = buildModuleBlock('analysisModules', 'ANALYSIS MODULES');
+            if (analysisModuleBlock) parts.push(analysisModuleBlock);
+
+            // 5. Companion Outputs (stack cumulatively; can be requested as standalone documents)
+            const companionOutputBlock = buildModuleBlock('companionOutputs', 'COMPANION OUTPUTS');
+            if (companionOutputBlock) parts.push(companionOutputBlock);
+
+            // 6. Productivity Tools (stack cumulatively; can be requested as standalone documents)
+            const productivityToolBlock = buildModuleBlock('productivityTools', 'PRODUCTIVITY TOOLS');
+            if (productivityToolBlock) parts.push(productivityToolBlock);
+
+            // 7. Writing Style & Tone (auto-match to Document Type overrides manual selection when enabled)
+            if (state.autoMatchStyle && state.coreFormat && docTypeToneMap[state.coreFormat]) {
+                const matchedTone = docTypeToneMap[state.coreFormat];
+                parts.push(`[WRITING STYLE]\n${promptData.toneStyle[matchedTone].snippet}`);
+            } else if (state.toneStyle) {
+                parts.push(`[WRITING STYLE]\n${promptData.toneStyle[state.toneStyle].snippet}`);
+            }
+
+            // 8. Target Audience (+ optional Reading Level override)
+            const audienceParts = [];
+            if (state.targetAudience) audienceParts.push(promptData.targetAudience[state.targetAudience].snippet);
+            if (state.readingLevel) audienceParts.push(promptData.readingLevel[state.readingLevel].snippet);
+            if (audienceParts.length > 0) {
+                parts.push(`[AUDIENCE]\n${audienceParts.join('\n\n')}`);
+            }
+
+            // 9. Citation Rules (format + source attribution + reference section)
+            const citationParts = [];
+            if (state.citationRules) citationParts.push(promptData.citationRules[state.citationRules].snippet);
+            if (state.sourceAttribution) citationParts.push(promptData.sourceAttribution[state.sourceAttribution].snippet);
+            if (state.referenceSection) citationParts.push(promptData.referenceSection[state.referenceSection].snippet);
+            if (citationParts.length > 0) {
+                parts.push(`[CITATION RULES]\n${citationParts.join('\n\n')}`);
+            }
+
+            // 10. Tables, Charts & Visual Elements
+            const visualElementParts = [];
+
+            if (state.tablePreference) {
+                visualElementParts.push(`Tables:\n${promptData.tablePreference[state.tablePreference].snippet}`);
+            }
+
+            if (state.chartPreference) {
+                visualElementParts.push(`Charts & Graphs:\n${promptData.chartPreference[state.chartPreference].snippet}`);
+            }
+
+            if (state.visualEmphasis.length > 0) {
+                const text = state.visualEmphasis.map(k => promptData.visualEmphasis[k].snippet).join('\n');
+                visualElementParts.push(`Visual Emphasis:\n${text}`);
+            }
+
+            const figureParts = [];
+            if (state.figureStyle) figureParts.push(promptData.figureStyle[state.figureStyle].snippet);
+            if (state.figureCaptions) figureParts.push(promptData.figureCaptions[state.figureCaptions].snippet);
+            if (state.numberFiguresAndTables) figureParts.push("Number all tables and figures sequentially (e.g., Table 1, Table 2, Figure 1, Figure 2).");
+            if (figureParts.length > 0) {
+                visualElementParts.push(`Figure Formatting:\n${figureParts.join('\n')}`);
+            }
+
+            if (state.visualAccessibility.length > 0) {
+                const text = state.visualAccessibility.map(k => promptData.visualAccessibility[k].snippet).join('\n');
+                visualElementParts.push(`Accessibility:\n${text}`);
+            }
+
+            if (visualElementParts.length > 0) {
+                parts.push(`[TABLES, CHARTS & VISUAL ELEMENTS]\n${visualElementParts.join('\n\n')}`);
+            }
+
+            // 11. Typography, Color & Visual Design
+            const visualParts = [];
+
+            if (state.typographyEnabled) {
+                const fontLines = [];
+                fontElements.forEach(el => {
+                    const fState = state.fonts[el.id];
+                    let f = fState.selection === 'Other' ? fState.custom : fState.selection;
+                    let s = fState.size;
+                    
+                    if (f || s) {
+                        let text = `- ${el.label}: `;
+                        if (f) text += `${f} `;
+                        if (f && s) text += `/ `;
+                        if (s) text += `${s}`;
+                        fontLines.push(text);
+                    }
+                });
+                if (fontLines.length > 0) {
+                    visualParts.push(`Typography Hierarchy:\n${fontLines.join('\n')}`);
+                }
+            }
+
+            const dom = resolveColor('dominant');
+            const sec = resolveColor('secondary');
+            const acc = resolveColor('accent');
+
+            if (dom || sec || acc || state.customColorInstructions) {
+                const domText = dom || "[Not defined]";
+                const secText = sec || "[Not defined]";
+                const accText = acc || "[Not defined]";
+                
+                let colorText = `Color Strategy:\n- 60% Dominant (Main body text & structures): ${domText}\n- 30% Secondary (Heading 1 & 2, header/footer accents, cover page blocks): ${secText}\n- 10% Accent (High-impact focal points, table header rows, hyperlinks, callout boxes, charts): ${accText}`;
+                
+                if (state.customColorInstructions.trim()) {
+                    colorText += `\n\nAdditional Color Instructions:\n${state.customColorInstructions.trim()}`;
+                }
+                
+                visualParts.push(colorText);
+            }
+
+            if (visualParts.length > 0) {
+                parts.push(`[TYPOGRAPHY, COLOR & VISUAL DESIGN]\n${visualParts.join('\n\n')}`);
+            }
+
+            // Construct final rendering string
+            const finalString = parts.join('\n\n');
+            const textarea = document.getElementById('master-prompt');
+            textarea.value = finalString;
+
+            // Live Word Counter
+            const words = finalString.trim() ? finalString.trim().split(/\s+/).length : 0;
+            document.getElementById('word-count').innerText = `${words} Words`;
+
+            // Active State Visuals on compile button
+            const btn = document.getElementById('copy-btn');
+            if (finalString.length > 0) {
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            updateNavProgress();
+        }
+
+        // Fills in each section navigator pill once that section has at least one selection made
+        function updateNavProgress() {
+            const dom = resolveColor('dominant');
+            const sec = resolveColor('secondary');
+            const acc = resolveColor('accent');
+
+            const sectionHasContent = {
+                1: state.customContext.trim().length > 0,
+                2: !!state.lengthConstraint,
+                3: !!state.coreFormat,
+                4: state.analysisModules.length > 0,
+                5: state.companionOutputs.length > 0,
+                6: state.productivityTools.length > 0,
+                7: !!state.toneStyle || state.autoMatchStyle,
+                8: !!state.targetAudience || !!state.readingLevel,
+                9: !!state.citationRules || !!state.sourceAttribution || !!state.referenceSection,
+                10: !!state.tablePreference || !!state.chartPreference || state.visualEmphasis.length > 0 ||
+                    !!state.figureStyle || !!state.figureCaptions || state.numberFiguresAndTables ||
+                    state.visualAccessibility.length > 0,
+                11: state.typographyEnabled || !!dom || !!sec || !!acc || state.customColorInstructions.trim().length > 0
+            };
+
+            Object.entries(sectionHasContent).forEach(([num, hasContent]) => {
+                const pill = document.querySelector(`[data-nav-pill="${num}"]`);
+                if (!pill) return;
+                pill.classList.toggle('is-filled', hasContent);
+            });
+        }
+
+        // --- COMMAND PANEL ACTIONS ---
+        function copyPrompt() {
+            const textarea = document.getElementById('master-prompt');
+            if (!textarea.value.trim()) return;
+
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                
+                const toast = document.getElementById('copy-toast');
+                toast.classList.remove('opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('opacity-0');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+            
+            window.getSelection().removeAllRanges();
+        }
+
+        function clearAll() {
+            // Reset core state
+            state.customContext = "";
+            state.coreFormat = "";
+            state.lengthConstraint = "";
+            state.lengthNumber = "";
+            state.analysisModules = [];
+            state.analysisModulesStandalone = false;
+            state.companionOutputs = [];
+            state.companionOutputsStandalone = false;
+            state.productivityTools = [];
+            state.productivityToolsStandalone = false;
+            state.toneStyle = "";
+            state.autoMatchStyle = false;
+            state.targetAudience = "";
+            state.readingLevel = "";
+            state.citationRules = "";
+            state.sourceAttribution = "";
+            state.referenceSection = "";
+            state.typographyEnabled = false;
+            state.tablePreference = "";
+            state.chartPreference = "";
+            state.visualEmphasis = [];
+            state.figureStyle = "";
+            state.figureCaptions = "";
+            state.numberFiguresAndTables = false;
+            state.visualAccessibility = [];
+
+            // Clear inputs visually
+            document.getElementById('custom-context').value = "";
+            document.getElementById('coreFormat-dropdown').value = "";
+            document.getElementById('lengthConstraints-dropdown').value = "";
+            document.getElementById('toneStyle-dropdown').value = "";
+            document.getElementById('toneStyle-dropdown').classList.remove('opacity-50', 'pointer-events-none');
+            document.getElementById('auto-match-style-checkbox').checked = false;
+            document.getElementById('targetAudience-dropdown').value = "";
+            document.getElementById('readingLevel-dropdown').value = "";
+            document.getElementById('citationRules-dropdown').value = "";
+            document.getElementById('sourceAttribution-dropdown').value = "";
+            document.getElementById('referenceSection-dropdown').value = "";
+            document.getElementById('tablePreference-dropdown').value = "";
+            document.getElementById('chartPreference-dropdown').value = "";
+            document.getElementById('figureStyle-dropdown').value = "";
+            document.getElementById('figureCaptions-dropdown').value = "";
+            document.getElementById('number-figures-tables-checkbox').checked = false;
+            
+            document.getElementById('length-number-container').classList.add('hidden');
+            document.getElementById('length-number-input').value = "";
+            document.getElementById('length-number-label').textContent = "Number of Words";
+            document.getElementById('length-number-input').placeholder = "e.g. 1500";
+
+            clearCheckboxGroup('analysisModules', 'analysisModules');
+            clearCheckboxGroup('companionOutputs', 'companionOutputs');
+            clearCheckboxGroup('productivityTools', 'productivityTools');
+            clearCheckboxGroup('visualEmphasis', 'visualEmphasis');
+            clearCheckboxGroup('visualAccessibility', 'visualAccessibility');
+
+            // Clear visual domains
+            clearFonts();
+            clearColors();
+            applyTypographyToggleUI();
+            applyStandaloneToggleUI('analysisModules');
+            applyStandaloneToggleUI('companionOutputs');
+            applyStandaloneToggleUI('productivityTools');
+
+            updateMasterPrompt();
+        }
+
+        // Initialize App on Window Load
+        window.onload = () => {
+            // Populate initial state sizes before first render
+            fontElements.forEach(el => {
+                state.fonts[el.id] = { selection: '', custom: '', size: el.defaultSize };
+            });
+            
+            renderAllGrids();
+            applyTypographyToggleUI();
+            applyStandaloneToggleUI('analysisModules');
+            applyStandaloneToggleUI('companionOutputs');
+            applyStandaloneToggleUI('productivityTools');
+            updateMasterPrompt();
+        };
+    </script>
+</body>
+</html>
