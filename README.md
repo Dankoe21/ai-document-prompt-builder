@@ -12,6 +12,12 @@ what you want and more time creating high-quality documents.
 
 ------------------------------------------------------------------------
 
+# Demo
+
+https://github.com/user-attachments/assets/7c859eb8-7395-4bee-8561-b7dd35a3572d
+
+------------------------------------------------------------------------
+
 # Why This Project Exists
 
 Writing a good prompt is often harder than writing the document itself.
